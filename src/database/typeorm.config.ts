@@ -1,37 +1,19 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { User } from './entities/user.entity';
-import 'dotenv/config';
+import { Album } from './entities/album.entity';
 
-const entities = [User];
-
-console.log(process.env.COOKIE_KEY);
+const entities = [User, Album];
 
 let typeormConfig = {
-  synchronize: false,
-  migrations: ['./migrations/*.js'],
-  migrationsRun: true,
+  type: process.env.TYPEORM_TYPE,
+  database: process.env.TYPEORM_DBNAME,
+  synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
+  //entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  //migrations: ['./migrations/*.js'],
+  entities: [User, Album],
+
+  //migrationsRun: true,
 };
 
-switch (process.env.NODE_ENV) {
-  case 'development':
-    Object.assign(typeormConfig, {
-      type: 'sqlite',
-      database: 'db.sqlite',
-      entities: ['./entities/*.ts'],
-    });
-    break;
-  case 'test':
-    Object.assign(typeormConfig, {
-      type: 'sqlite',
-      database: 'test.sqlite',
-      entities: entities,
-    });
-    break;
-  case 'production':
-    break;
-  default:
-    throw new Error('unknown environment');
-}
-
-export default typeormConfig;
+export default typeormConfig as DataSourceOptions;
 export const dataSource = new DataSource(typeormConfig as DataSourceOptions);

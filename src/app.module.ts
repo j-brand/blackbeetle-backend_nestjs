@@ -1,25 +1,19 @@
 import { Module } from '@nestjs/common';
 
+import { TypeOrmModule } from '@nestjs/typeorm';
+import typeormConfig from './database/typeorm.config';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { UsersModule } from './users/users.module';
+import { AlbumsModule } from './albums/albums.module';
+import { Seeder } from './database/seed/users.seeder';
 
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-//import { DatabaseModule } from './database/database.module';
-import typeormConfig from './database/typeorm.config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `./.env.${process.env.NODE_ENV}`,
-    }),
-    TypeOrmModule.forRoot(typeormConfig),
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forRoot(typeormConfig), UsersModule, AlbumsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Seeder],
 })
 export class AppModule {}

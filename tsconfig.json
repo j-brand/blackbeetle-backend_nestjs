@@ -17,9 +17,10 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "allowJs": true,
     "paths": {
-      "@entities": [
-        "src/database/entities/*"
+      "@entities/*": [
+        "./src/database/entities/*"
       ],
     }
   }
