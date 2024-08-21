@@ -44,6 +44,9 @@ lerna-debug.log*
 .env.development
 .env.test
 
+#include Rest Client Conf
+!/src/database/requests/.env
+
 # temp directory
 .temp
 .tmp
