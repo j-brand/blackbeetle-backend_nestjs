@@ -1,9 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
-import { Serialize } from '../interceptors/serialize/serialize.interceptor';
+import { Serialize } from '../shared/interceptors/serialize/serialize.interceptor';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Controller('users')
 @Serialize(UserDto)
@@ -11,10 +22,16 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('signup')
-  async create(@Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(createUserDto);
+  async create(@Body() body: CreateUserDto) {
+    return await this.usersService.create(body);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('whoami')
+  whoami(@Request() req){
+    return req.user;
+  }
+  
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -26,13 +43,13 @@ export class UsersController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  update(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.usersService.update(+id, body);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
-}
 
+}

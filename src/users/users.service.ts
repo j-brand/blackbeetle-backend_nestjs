@@ -26,6 +26,11 @@ export class UsersService {
     return user;
   }
 
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.repo.findOne({ where: { email } });
+    return user;
+  }
+
   async update(id: number, updateUserDto: Partial<UpdateUserDto>): Promise<User> {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) {
