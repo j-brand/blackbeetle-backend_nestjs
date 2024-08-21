@@ -1,0 +1,30 @@
+### SignUp a new user
+
+POST {{$dotenv URL}}:{{$dotenv PORT}}/auth/signup
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "test23456789@test.de",
+    "password": "123456"
+
+}
+
+
+### Sign in
+# @name signin
+POST {{$dotenv URL}}:{{$dotenv PORT}}/auth/signin
+Content-Type: application/json
+
+{
+    "email":"test23456789@test.de",
+    "password":"123456"
+}
+
+###
+
+@jwt_token = {{signin.response.body.accessToken}}
+
+# @name whoami
+GET {{$dotenv URL}}:{{$dotenv PORT}}/users/whoami
+Authorization: Bearer {{jwt_token}}
