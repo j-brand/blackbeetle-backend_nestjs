@@ -1,0 +1,51 @@
+
+### Upload a image file into album ID 1
+POST {{$dotenv URL}}:{{$dotenv PORT}}/upload
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="path"
+Content-Type: text/plain
+
+albums
+--MfnBoundry
+Content-Disposition: form-data; name="entity_id"
+Content-Type: text/plain
+
+1
+--MfnBoundry
+Content-Disposition: form-data; name="type"
+Content-Type: text/plain
+
+IMAGE
+--MfnBoundry
+Content-Disposition: form-data; name="file"; filename="img_01.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_01.pdf
+--MfnBoundry--
+
+
+
+### Sending false upload request
+POST {{$dotenv URL}}:{{$dotenv PORT}}/upload
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="path"
+Content-Type: text/plain
+
+albums
+--MfnBoundry
+Content-Disposition: form-data; name="entity_id"
+Content-Type: text/plain
+
+1
+--MfnBoundry
+Content-Disposition: form-data; name="file"; filename="img_01.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_01.pdf
+--MfnBoundry--
+
+
