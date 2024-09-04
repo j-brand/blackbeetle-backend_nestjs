@@ -26,6 +26,7 @@
     "seed": "node --env-file=.env.development node_modules/.bin/ts-node ./src/database/seed/bootstrap.seed.ts"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^10.2.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
@@ -33,6 +34,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
+    "bullmq": "^5.12.11",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "reflect-metadata": "^0.2.0",

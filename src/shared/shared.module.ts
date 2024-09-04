@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MediaService } from './media/media.service';
 import { UploadController } from './upload/upload.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { ImageService } from './media/image.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Media } from '@entities/media.entity';
+import { MediaModule } from 'src/media/media.module';
+
 
 @Module({
-  imports: [MulterModule.register({ dest: 'storage' }), TypeOrmModule.forFeature([Media])],
-  providers: [MediaService, ImageService],
-  controllers: [UploadController],
-  exports: [ImageService, MediaService],
+  imports: [MulterModule.register({ dest: 'storage' }), MediaModule],
+  providers: [],
+  controllers: [UploadController, ],
+  exports: [],
 })
 export class SharedModule {}

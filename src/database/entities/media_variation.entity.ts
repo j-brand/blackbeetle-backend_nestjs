@@ -18,6 +18,6 @@ export class MediaVariation {
   @Column({ nullable: true })
   height: number; // Height of the variation (if applicable)
 
-  @ManyToOne(() => Media, media => media.variations)
+  @ManyToOne(() => Media, media => media.variations, {onDelete: 'CASCADE'})
   media: Media;
 }

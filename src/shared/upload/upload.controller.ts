@@ -8,10 +8,10 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFileFilter, diskStorageConf } from './upload.utils';
-import { CreateMediaDto } from '../media/dto/create-media.dto';
-import { ImageService } from '../media/image.service';
+import { CreateMediaDto } from '../../media/dto/create-media.dto';
+import { ImageService } from '../../media/image.service';
 import { DeleteFileOnFailFilter } from '../filters/delete-file-on-fail/delete-file-on-fail.filter';
-import { MediaService } from '../media/media.service';
+import { MediaService } from '../../media/media.service';
 
 @Controller('upload')
 export class UploadController {
@@ -32,14 +32,18 @@ export class UploadController {
     @Body() body: CreateMediaDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const variations = await this.imageService.generateImageVariations(
-      `${file.destination}/${file.filename}`,
-      `storage/${body.path}/${body.entity_id}`,
-      ['webp', 'large', 'thumbnail'],
-    );
-    //console.log(variations);
+    const destinationPath = `storage/${body.path}/${body.entity_id}`;
     body.title = file.filename;
     body.path = file.path;
-    return this.mediaService.create(body, variations);
+    const media = await this.mediaService.create(body);
+
+    this.imageService.generateVariations(
+      file.path,
+      destinationPath,
+      ['webp', 'large', 'thumbnail'],
+      media.id,
+    );
+
+    return media;
   }
 }
