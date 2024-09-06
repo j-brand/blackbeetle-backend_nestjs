@@ -17,12 +17,15 @@ export class UsersService {
     return this.repo.save(user);
   }
 
-  async findAll():Promise<User[]> {
+  async findAll(): Promise<User[]> {
     return this.repo.find();
   }
 
   async findOne(id: number): Promise<User> {
     const user = await this.repo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
     return user;
   }
 
@@ -31,7 +34,10 @@ export class UsersService {
     return user;
   }
 
-  async update(id: number, updateUserDto: Partial<UpdateUserDto>): Promise<User> {
+  async update(
+    id: number,
+    updateUserDto: Partial<UpdateUserDto>,
+  ): Promise<User> {
     const user = await this.repo.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

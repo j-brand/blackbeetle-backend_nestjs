@@ -28,6 +28,6 @@ export class Media {
   @OneToMany(() => MediaVariation, variation => variation.media)
   variations: MediaVariation[];
 
-  @ManyToMany(() => Album, album => album.title_image)
+  @OneToMany(() => Album, album => album.title_image)
   album: Album;
 }

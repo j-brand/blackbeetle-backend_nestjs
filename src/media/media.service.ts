@@ -2,22 +2,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Media } from '../../database/entities/media.entity';
+import { Media } from '../database/entities/media.entity';
 
 import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
 import { MediaVariation } from '@entities/media_variation.entity';
+import { CreateMediaVariationDto } from './dto/create-media-variation.dto';
 
 @Injectable()
 export class MediaService {
   constructor(
     @InjectRepository(Media) private readonly repo: Repository<Media>,
+    @InjectRepository(MediaVariation)
+    private readonly variationRepo: Repository<MediaVariation>,
   ) {}
 
-  async create(createMediaDto: CreateMediaDto, variations?: MediaVariation[]): Promise<Media> {
+  async create(
+    createMediaDto: CreateMediaDto,
+    variations?: CreateMediaVariationDto[],
+  ): Promise<Media> {
     const media = await this.repo.create(createMediaDto);
-    
-    
+
     if (variations) {
       media.variations = [];
       variations.forEach(async (variation) => {
@@ -25,7 +30,7 @@ export class MediaService {
         vari.path = variation.path;
         vari.type = variation.type;
         vari.width = variation.width;
-        vari.height = variation.height
+        vari.height = variation.height;
         media.variations.push(vari);
       });
     }
@@ -33,14 +38,12 @@ export class MediaService {
     return this.repo.save(media);
   }
 
-  async createVariations(
-    variations: MediaVariation[],
-    media: Media,
-  ): Promise<Media> {
-    variations.forEach(async (variation) => {
-      const vari = this.repo.create(variation);
-    });
-    return this.repo.save(media);
+  async createVariation(variation: CreateMediaVariationDto): Promise<Media> {
+    const newVariation = this.variationRepo.create(variation);
+    await this.variationRepo.save(newVariation);
+
+    return this.findOne(newVariation.media.id);
+    //return this.repo.save(media);
   }
 
   async findAll(): Promise<Media[]> {
@@ -48,7 +51,10 @@ export class MediaService {
   }
 
   async findOne(id: number): Promise<Media> {
-    const media = await this.repo.findOne({ where: { id } });
+    const media = await this.repo.findOne({
+      where: { id },
+      relations: ['variations'],
+    });
     return media;
   }
 
@@ -65,7 +71,10 @@ export class MediaService {
   }
 
   async remove(id: number): Promise<Media> {
-    const media = await this.repo.findOne({ where: { id } });
+    const media = await this.repo.findOne({
+      where: { id },
+      relations: ['variations'],
+    });
     if (!media) {
       throw new NotFoundException(`Media with ID ${id} not found`);
     }

@@ -1,0 +1,5 @@
+### Get Media by ID
+GET {{$dotenv URL}}:{{$dotenv PORT}}/media/26
+
+### Delete Media by ID
+DELETE {{$dotenv URL}}:{{$dotenv PORT}}/media/26

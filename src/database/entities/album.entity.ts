@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Media } from './media.entity';
 
@@ -20,7 +21,7 @@ export class Album {
   @Column({ unique: true, nullable: true })
   slug: string;
 
-  @ManyToMany(() => Media, (media) => media, { nullable: true })
+  @ManyToOne(() => Media, (media) => media, { nullable: true })
   title_image: Media;
 
   @ManyToMany(() => Media, (media) => media, { nullable: true })
