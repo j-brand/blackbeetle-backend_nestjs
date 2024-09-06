@@ -17,11 +17,14 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
-      "@entities/*": [
-        "./src/database/entities/*"
-      ],
+      "@entities/*": ["src/database/entities/*"],
+      "@users/*": ["src/users/*"],
+      "@albums/*": ["src/albums/*"],
+      "@auth/*": ["src/auth/*"],
+      "@media/*": ["src/media/*"]
     }
   }
 }
