@@ -1,6 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, ManyToMany } from "typeorm";
-import { MediaVariation } from "./media_variation.entity";
-import { Album } from "./album.entity";
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  AfterRemove,
+} from 'typeorm';
+import { MediaVariation } from '@entities/media_variation.entity';
+import { AlbumMedia } from './album_media.entity';
 
 @Entity()
 export class Media {
@@ -13,7 +21,7 @@ export class Media {
   @Column()
   type: string; // Type of media (e.g., 'image', 'video', 'audio')
 
-  @Column({ nullable: true })
+  @Column()
   title: string;
 
   @Column({ nullable: true })
@@ -25,9 +33,16 @@ export class Media {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @OneToMany(() => MediaVariation, variation => variation.media)
+  @OneToMany(() => MediaVariation, (variation) => variation.media, {
+    eager: true,
+  })
   variations: MediaVariation[];
 
-  @OneToMany(() => Album, album => album.title_image)
-  album: Album;
+  @OneToMany(() => AlbumMedia, (albumMedia) => albumMedia.media)
+  albums: AlbumMedia[];
+
+  @AfterRemove()
+  deleteFile(){
+    
+  }
 }

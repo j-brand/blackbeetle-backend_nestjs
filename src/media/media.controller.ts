@@ -5,7 +5,7 @@ import {
   NotFoundException,
   Param,
 } from '@nestjs/common';
-import { MediaService } from './media.service';
+import { MediaService } from '@media/media.service';
 import * as fs from 'fs';
 
 @Controller('media')
@@ -20,11 +20,12 @@ export class MediaController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const media = await this.mediaService.remove(+id);
-    fs.unlinkSync(media.path);
+    return media;
+/*     fs.unlinkSync(media.path);
     if (media.variations) {
       media.variations.forEach((variation) => {
         fs.unlinkSync(variation.path);
       });
-    }
+    } */
   }
 }

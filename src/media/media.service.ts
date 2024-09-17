@@ -2,12 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Media } from '../database/entities/media.entity';
+import { Media } from '@entities/media.entity';
 
-import { CreateMediaDto } from './dto/create-media.dto';
-import { UpdateMediaDto } from './dto/update-media.dto';
+import { CreateMediaDto } from '@media/dto/create-media.dto';
+import { UpdateMediaDto } from '@media/dto/update-media.dto';
 import { MediaVariation } from '@entities/media_variation.entity';
-import { CreateMediaVariationDto } from './dto/create-media-variation.dto';
+import { CreateMediaVariationDto } from '@media/dto/create-media-variation.dto';
 
 @Injectable()
 export class MediaService {
@@ -35,7 +35,9 @@ export class MediaService {
       });
     }
 
-    return this.repo.save(media);
+    const newMedia = await this.repo.save(media);
+
+    return newMedia;
   }
 
   async createVariation(variation: CreateMediaVariationDto): Promise<Media> {

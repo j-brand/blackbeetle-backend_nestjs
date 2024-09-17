@@ -1,5 +1,5 @@
 import { MediaVariation } from '@entities/media_variation.entity';
-import { IsEnum, IsNotEmpty, isNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 export class CreateMediaDto {
  
@@ -14,6 +14,8 @@ export class CreateMediaDto {
   @IsString()
   path: string;
 
+  //Delete?
+  @IsOptional()
   @IsString()
   entity_id: string;
 
@@ -22,6 +24,4 @@ export class CreateMediaDto {
 
   @IsOptional()
   variations: MediaVariation[];
-
-  file: Express.Multer.File;
 }

@@ -1,19 +1,26 @@
-import { DataSource, DataSourceOptions } from 'typeorm';
+import {
+  DataSource,
+  DataSourceOptions,
+} from 'typeorm';
 import { User } from './entities/user.entity';
 import { Album } from './entities/album.entity';
-import { MediaVariation } from './entities/media_variation.entity';
-import { Media } from './entities/media.entity';
 import { AlbumMedia } from './entities/album_media.entity';
+import { Media } from './entities/media.entity';
+import { MediaVariation } from './entities/media_variation.entity';
+import { MediaSubscriber } from './subscribers/media.subscriber';
+import { AlbumSubscriber } from './subscribers/album.subscriber';
 
+
+ console.log(process.env.TYPEORM_LOGGING);
 let typeormConfig = {
   type: process.env.TYPEORM_TYPE,
   database: process.env.TYPEORM_DBNAME,
   synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
-  //entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  migrations: ['src/database/migrations/*.js'],
-  entities: [User, Album, AlbumMedia, Media, MediaVariation],
-
-  //migrationsRun: true,
+  logging: process.env.TYPEORM_LOGGING || false,
+  //entities: ['@entities/*.entity.ts'],
+  subscribers: [MediaSubscriber, AlbumSubscriber],
+  entities: [User, Album, Media, MediaVariation, AlbumMedia],
+  migrations: ['@migrations/*.js'],
 };
 
 export default typeormConfig as DataSourceOptions;

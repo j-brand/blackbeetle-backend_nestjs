@@ -5,10 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToMany,
-  ManyToOne,
+  OneToOne,
 } from 'typeorm';
-import { Media } from './media.entity';
+import { Media } from '@entities/media.entity';
+import { AlbumMedia } from './album_media.entity';
 
 @Entity()
 export class Album {
@@ -21,11 +21,8 @@ export class Album {
   @Column({ unique: true, nullable: true })
   slug: string;
 
-  @ManyToOne(() => Media, (media) => media, { nullable: true })
+  @OneToOne(() => Media, { nullable: true })
   title_image: Media;
-
-  @ManyToMany(() => Media, (media) => media, { nullable: true })
-  images: Media[];
 
   @Column({ nullable: true })
   description: string;
@@ -41,4 +38,12 @@ export class Album {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => AlbumMedia, (albumMedia) => albumMedia.album, {
+    nullable: true,
+    eager: true,
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  media: AlbumMedia[];
 }

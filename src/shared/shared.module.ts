@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UploadController } from './upload/upload.controller';
+import { UploadController } from '@upload/upload.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { MediaModule } from 'src/media/media.module';
+import { MediaModule } from '@media/media.module';
 
 
 @Module({

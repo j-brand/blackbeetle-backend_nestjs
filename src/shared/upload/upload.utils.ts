@@ -5,7 +5,6 @@ const fsPromises = require('fs/promises');
 
 import { diskStorage } from 'multer';
 
-
 export const imageFileFilter = (req, file, callback) => {
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return callback(
@@ -21,29 +20,37 @@ export const getFileNameCallback = async (req, file, callback) => {
   callback(null, fileName);
 };
 export const getDestinationCallback = (req, file, callback) => {
-  const destination = getDestination(req);
+  const destination = getDestinationFromUri(req);
   fs.mkdirSync(destination, { recursive: true });
   callback(null, destination);
 };
 
+// DELETE?
 const getDestination = (req) => {
   const entity_id = req.body.entity_id;
   const path = req.body.path;
   const destination = `storage/${path}/${entity_id}`;
-  
+
+  return destination;
+};
+
+const getDestinationFromUri = (req: Request) => {
+  const [entity, entity_id] = req.url.split('/').filter((part) => part !== '');
+  const destination = `storage/${entity}/${entity_id}`;
+
   return destination;
 };
 
 const getFileName = async (req: Request, file: Express.Multer.File) => {
-  const destination = getDestination(req);
-  
+  const destination = getDestinationFromUri(req);
+
   const originalName = file.originalname;
   const fileExtName = extname(originalName);
   const baseName = basename(originalName, fileExtName);
-  
+
   let newFileName = originalName;
   let counter = 1;
-  
+
   try {
     while (await fileExists(`${destination}/${newFileName}`)) {
       const match = baseName.match(/(.*)_(\d+)$/);
@@ -71,17 +78,16 @@ const fileExists = async (path: string): Promise<boolean> => {
   }
 };
 
-
 /**
  * The diskStorageConf constant is a configuration object for the disk storage engine used by multer.
  * It specifies the destination and filename callbacks to be used for storing uploaded files.
- * 
+ *
  * @remarks
  * The `destination` callback determines the directory where the uploaded files will be stored.
  * The `filename` callback determines the name of the uploaded file.
- * 
+ *
  * @typedef {import('multer').StorageEngine} StorageEngine
- * 
+ *
  * @type {StorageEngine}
  */
 export const diskStorageConf = diskStorage({

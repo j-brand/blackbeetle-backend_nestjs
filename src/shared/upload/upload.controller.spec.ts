@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UploadController } from './upload.controller';
+import { UploadController } from '@upload/upload.controller';
 import { ImageService } from '@media/image.service';
 import { MediaService } from '@media/media.service';
 

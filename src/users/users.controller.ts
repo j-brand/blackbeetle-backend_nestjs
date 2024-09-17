@@ -9,12 +9,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDto } from './dto/user.dto';
-import { Serialize } from '../shared/interceptors/serialize/serialize.interceptor';
-import { AuthGuard } from '../auth/guards/auth.guard';
+import { UsersService } from '@users/users.service';
+import { CreateUserDto } from '@users/dto/create-user.dto';
+import { UpdateUserDto } from '@users/dto/update-user.dto';
+import { UserDto } from '@users/dto/user.dto';
+import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
+import { AuthGuard } from '@auth/guards/auth.guard';
 
 @Controller('users')
 @Serialize(UserDto)

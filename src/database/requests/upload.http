@@ -22,8 +22,41 @@ IMAGE
 Content-Disposition: form-data; name="file"; filename="img_01.jpg"
 Content-Type: image/jpeg
 
-< ./test_data/img_01.pdf
+< ./test_data/img_01.jpg
 --MfnBoundry--
+
+
+### Upload multiple (3) images into album ID 1
+POST {{$dotenv URL}}:{{$dotenv PORT}}/upload/images
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="path"
+Content-Type: text/plain
+
+albums
+--MfnBoundry
+Content-Disposition: form-data; name="entity_id"
+Content-Type: text/plain
+
+1
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_01.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_01.jpg
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_02.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_02.jpg
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_03.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_03.jpg
+--MfnBoundry--
+
 
 
 

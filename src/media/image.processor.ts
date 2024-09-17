@@ -2,11 +2,10 @@ import { OnWorkerEvent, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
 
-import { ImageService } from './image.service';
-import { variations as variationConfigs } from './image-variations.conf';
-import { MediaService } from './media.service';
+import { ImageService } from '@media/image.service';
+import { variations as variationConfigs } from '@media/image-variations.conf';
+import { MediaService } from '@media/media.service';
 import { MediaVariation } from '@entities/media_variation.entity';
-import { Brackets } from 'typeorm';
 
 @Processor('image')
 export class ImageProcessor extends WorkerHost {

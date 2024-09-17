@@ -1,17 +1,20 @@
 import {
   Body,
   Controller,
+  Param,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { imageFileFilter, diskStorageConf } from './upload.utils';
-import { CreateMediaDto } from '../../media/dto/create-media.dto';
-import { ImageService } from '../../media/image.service';
-import { DeleteFileOnFailFilter } from '../filters/delete-file-on-fail/delete-file-on-fail.filter';
-import { MediaService } from '../../media/media.service';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { imageFileFilter, diskStorageConf } from '@upload/upload.utils';
+import { CreateMediaDto } from '@media/dto/create-media.dto';
+import { ImageService } from '@media/image.service';
+import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/delete-file-on-fail.filter';
+import { MediaService } from '@media/media.service';
+import { UploadImagesDto } from './dto/upload-images.dto';
 
 @Controller('upload')
 export class UploadController {
@@ -45,5 +48,37 @@ export class UploadController {
     );
 
     return media;
+  }
+  
+
+  
+  @Post('images')
+  @UseInterceptors(
+    FilesInterceptor('files', 50, {
+      storage: diskStorageConf,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async UploadImages(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() body: UploadImagesDto,
+  ) {
+    //const destinationPath = `storage/albums/${albumId}`;
+
+    console.log(files);
+
+    /*     files.forEach(async (file) => {
+      const newMedia = {
+        title: file.filename,
+        path: file.path,
+        entity_id: body.entity_id,
+        type: 'IMAGE',
+        file: file,
+      } as CreateMediaDto;
+
+      const media = await this.mediaService.create();
+    }); */
+
+    return files;
   }
 }

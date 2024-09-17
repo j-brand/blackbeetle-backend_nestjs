@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Media } from "./media.entity";
+import { Media } from "@entities/media.entity";
 
 @Entity()
 export class MediaVariation {

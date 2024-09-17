@@ -20,11 +20,18 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
+      "@app/*": ["src/*"],
       "@entities/*": ["src/database/entities/*"],
+      "@migrations/*": ["src/database/migrations/*"],
+      "@seed/*": ["src/database/seed/*"],
+      "@auth/*": ["src/auth/*"],
       "@users/*": ["src/users/*"],
       "@albums/*": ["src/albums/*"],
-      "@auth/*": ["src/auth/*"],
-      "@media/*": ["src/media/*"]
+      "@media/*": ["src/media/*"],
+      "@shared/*": ["src/shared/*"],
+      "@upload/*": ["src/shared/upload/*"],
+      "@database/*": ["src/database/*"],
+      "@subscribers/*": ["src/database/subscribers/*"]
     }
   }
 }

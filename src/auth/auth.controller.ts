@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInDto } from './dto/sign-in.dto';
-import { SignUpDto } from './dto/sign-up.dto';
-import { Serialize } from 'src/shared/interceptors/serialize/serialize.interceptor';
-import { AuthDto } from './dto/auth.dto';
+import { AuthService } from '@auth/auth.service';
+import { SignInDto } from '@auth/dto/sign-in.dto';
+import { SignUpDto } from '@auth/dto/sign-up.dto';
+import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
+import { AuthDto } from '@auth/dto/auth.dto';
 
 @Controller('auth')
 @Serialize(AuthDto)

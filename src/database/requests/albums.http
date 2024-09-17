@@ -1,0 +1,53 @@
+@id = 3
+@slug = album-{{id}}
+
+
+### Create a new Album
+POST {{$dotenv URL}}:{{$dotenv PORT}}/albums
+Content-Type: application/json
+
+{
+    "title": "Album {{id}}",
+    "slug": "{{slug}}",
+    "description": "This is the first album"
+}
+
+### Get Album by ID
+GET {{$dotenv URL}}:{{$dotenv PORT}}/albums/{{id}}
+
+### Delete Album by ID
+DELETE {{$dotenv URL}}:{{$dotenv PORT}}/albums/{{id}}
+
+### Add one image to an album
+POST {{$dotenv URL}}:{{$dotenv PORT}}/albums/{{id}}
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_01.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_01.jpg
+--MfnBoundry--
+
+### Add multiple images to an album
+POST {{$dotenv URL}}:{{$dotenv PORT}}/albums/{{id}}
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_01.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_01.jpg
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_02.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_02.jpg
+--MfnBoundry
+Content-Disposition: form-data; name="files"; filename="img_03.jpg"
+Content-Type: image/jpeg
+
+< ./test_data/img_03.jpg
+--MfnBoundry--
+
+
