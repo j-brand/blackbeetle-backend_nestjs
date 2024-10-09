@@ -1,12 +1,5 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { MediaService } from '@media/media.service';
-import * as fs from 'fs';
 
 @Controller('media')
 export class MediaController {
@@ -19,13 +12,10 @@ export class MediaController {
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    const media = await this.mediaService.remove(+id);
-    return media;
-/*     fs.unlinkSync(media.path);
-    if (media.variations) {
-      media.variations.forEach((variation) => {
-        fs.unlinkSync(variation.path);
-      });
-    } */
+    const deleted = await this.mediaService.remove(+id);
+
+    if (deleted) {
+      return { message: 'Media deleted successfully' };
+    }
   }
 }

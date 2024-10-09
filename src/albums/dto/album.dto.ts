@@ -24,7 +24,6 @@ export class AlbumDto {
   end_date: Date;
 
   @Expose()
-  @Type(() => Media)
   title_image: Media;
 
   @Expose()

@@ -8,10 +8,9 @@ import { Repository } from 'typeorm';
 import { CreateAlbumDto } from '@albums/dto/create-album.dto';
 import { UpdateAlbumDto } from '@albums/dto/update-album.dto';
 import { Album } from '@entities/album.entity';
-import { CreateMediaDto } from '@app/media/dto/create-media.dto';
-import { MediaService } from '@app/media/media.service';
-import { AlbumMedia } from '@app/database/entities/album_media.entity';
-import { ImageService } from '@app/media/image.service';
+import { CreateMediaDto } from '@media/dto/create-media.dto';
+import { MediaService } from '@media/media.service';
+import { AlbumMedia } from '@database/entities/album_media.entity';
 
 @Injectable()
 export class AlbumsService {
@@ -19,7 +18,8 @@ export class AlbumsService {
     @InjectRepository(Album)
     private readonly repo: Repository<Album>,
     private readonly mediaService: MediaService,
-    private readonly imageService: ImageService,
+    @InjectRepository(AlbumMedia)
+    private readonly albumMediaRepo: Repository<AlbumMedia>,
   ) {}
 
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
@@ -43,7 +43,7 @@ export class AlbumsService {
   async findOne(id: number): Promise<Album> {
     const album = await this.repo.findOne({
       where: { id },
-      relations: ['media'],
+      relations: ['media', 'title_image'],
     });
     return album;
   }
@@ -51,13 +51,39 @@ export class AlbumsService {
   async update(
     id: number,
     updateAlbumDto: Partial<UpdateAlbumDto>,
+    title_image?: Express.Multer.File,
   ): Promise<Album> {
-    const album = await this.repo.findOne({ where: { id } });
+    const album = await this.repo.findOne({
+      where: { id },
+    });
     if (!album) {
       throw new NotFoundException(`Album with ID ${id} not found`);
     }
+
+    let oldImage = null;
+    if (title_image) {
+      oldImage = album.title_image;
+
+      const newImage = await this.mediaService.create(
+        {
+          title: title_image.filename,
+          path: `storage/albums/${id}`,
+          type: 'IMAGE',
+        } as CreateMediaDto,
+        ['album_cover', 'og_image'],
+      );
+      updateAlbumDto.title_image = newImage;
+    }
+
     Object.assign(album, updateAlbumDto);
-    return this.repo.save(album);
+    const result = this.repo.save(album);
+
+    //remove old image
+    if (oldImage) {
+      this.mediaService.remove(oldImage.id);
+    }
+
+    return result;
   }
 
   async remove(id: number): Promise<Album> {
@@ -83,7 +109,7 @@ export class AlbumsService {
    * @returns The updated album with the new image.
    * @throws NotFoundException if the album with the given ID is not found.
    */
-  async addImage(id: number, image: CreateMediaDto): Promise<Album> {
+  async addImage(id: number, image: Express.Multer.File): Promise<Album> {
     // Find the album by ID, including its media relations
     let album = await this.repo.findOne({
       where: { id },
@@ -94,26 +120,95 @@ export class AlbumsService {
       throw new NotFoundException(`Album with ID ${id} not found`);
     }
 
-    // Create a new media entry
-    const media = await this.mediaService.create(image);
+    // Create a new media, store it in the database and create image variations
+    const newMedia = await this.mediaService.create(
+      {
+        title: image.filename,
+        path: `storage/albums/${id}`,
+        type: 'IMAGE',
+      } as CreateMediaDto,
+      ['webp', 'large', 'thumbnail'],
+    );
 
     // Create a new AlbumMedia instance to link the media to the album
     const albumImage = new AlbumMedia();
-    albumImage.media = media;
+    albumImage.media = newMedia;
     albumImage.album = album;
     albumImage.order = album.media.length + 1; // Set the order of the new image
     album.media.push(albumImage); // Add the new image to the album's media list
 
-    // Generate image variations and store them in the album's folder
-    this.imageService.generateVariations(
-      `${media.path}/${media.title}`,
-      `storage/albums/${album.id}`,
-      ['webp', 'large', 'thumbnail'],
-      media.id,
-    );
+    return await this.repo.save(album);
+  }
 
-    const result = await this.repo.save(album);
+  /**
+   * Removes an image from an album.
+   *
+   * @param albumId - The ID of the album from which the image will be removed.
+   * @param imageId - The ID of the image to be removed from the album.
+   * @returns The updated album without the removed image.
+   * @throws NotFoundException if the album with the given ID is not found.
+   */
+  async removeImage(albumId: number, imageId: number): Promise<Album> {
+    // Find the album by ID, including its media relations
+    let album = await this.repo.findOne({
+      where: { id: albumId },
+      relations: ['media'],
+    });
 
-    return result;
+    if (!album) {
+      throw new NotFoundException(`Album with ID ${albumId} not found`);
+    }
+
+    // Find the AlbumMedia instance linking the media to the album
+    const albumImage = album.media.find((image) => image.media.id === imageId);
+
+    if (!albumImage) {
+      throw new NotFoundException(
+        `Image with ID ${imageId} not found in album with ID ${albumId}`,
+      );
+    }
+
+    // Remove the image from the album's media list
+    album.media = album.media.filter((image) => image.media.id !== imageId);
+
+    // Remove the AlbumMedia instance from the database
+    await this.mediaService.remove(imageId);
+
+    return album;
+  }
+
+  async swapAlbumImages(
+    albumId: number,
+    imageId1: number,
+    imageId2: number,
+  ): Promise<void> {
+    // Find the AlbumMedia entries for the two images within the specified album
+    const albumMedia1 = await this.albumMediaRepo.findOne({
+      where: { album: { id: albumId }, media: { id: imageId1 } },
+    });
+
+    const albumMedia2 = await this.albumMediaRepo.findOne({
+      where: { album: { id: albumId }, media: { id: imageId2 } },
+    });
+
+    if (!albumMedia1) {
+      throw new NotFoundException(
+        `Image with ID ${imageId1} not found in album with ID ${albumId}`,
+      );
+    }
+
+    if (!albumMedia2) {
+      throw new NotFoundException(
+        `Image with ID ${imageId2} not found in album with ID ${albumId}`,
+      );
+    }
+
+    // Swap the order values of the two AlbumMedia entries
+    const tempOrder = albumMedia1.order;
+    albumMedia1.order = albumMedia2.order;
+    albumMedia2.order = tempOrder;
+
+    // Save the updated AlbumMedia entries back to the database
+    await this.albumMediaRepo.save([albumMedia1, albumMedia2]);
   }
 }

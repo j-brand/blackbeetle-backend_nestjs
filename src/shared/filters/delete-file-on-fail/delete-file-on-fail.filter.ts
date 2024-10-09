@@ -3,11 +3,12 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  NotFoundException,
 } from '@nestjs/common';
 import * as fs from 'fs';
 import { Request, Response } from 'express';
 
-@Catch(BadRequestException)
+@Catch(BadRequestException, NotFoundException)
 export class DeleteFileOnFailFilter<T> implements ExceptionFilter {
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -23,7 +24,6 @@ export class DeleteFileOnFailFilter<T> implements ExceptionFilter {
     };
 
     const files = getFiles(request.file);
-    console.log(files)
     files.map((file: Express.Multer.File) => {
       fs.unlink(file.path, (err) => {
         if (err) {

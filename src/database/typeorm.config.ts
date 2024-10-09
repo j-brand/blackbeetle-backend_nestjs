@@ -10,13 +10,11 @@ import { MediaVariation } from './entities/media_variation.entity';
 import { MediaSubscriber } from './subscribers/media.subscriber';
 import { AlbumSubscriber } from './subscribers/album.subscriber';
 
-
- console.log(process.env.TYPEORM_LOGGING);
 let typeormConfig = {
   type: process.env.TYPEORM_TYPE,
   database: process.env.TYPEORM_DBNAME,
   synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
-  logging: process.env.TYPEORM_LOGGING || false,
+  logging: true,
   //entities: ['@entities/*.entity.ts'],
   subscribers: [MediaSubscriber, AlbumSubscriber],
   entities: [User, Album, Media, MediaVariation, AlbumMedia],

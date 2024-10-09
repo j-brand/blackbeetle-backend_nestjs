@@ -8,6 +8,7 @@ import { CreateMediaDto } from '@media/dto/create-media.dto';
 import { UpdateMediaDto } from '@media/dto/update-media.dto';
 import { MediaVariation } from '@entities/media_variation.entity';
 import { CreateMediaVariationDto } from '@media/dto/create-media-variation.dto';
+import { ImageService } from './image.service';
 
 @Injectable()
 export class MediaService {
@@ -15,27 +16,20 @@ export class MediaService {
     @InjectRepository(Media) private readonly repo: Repository<Media>,
     @InjectRepository(MediaVariation)
     private readonly variationRepo: Repository<MediaVariation>,
+    private readonly imageService: ImageService,
   ) {}
 
-  async create(
-    createMediaDto: CreateMediaDto,
-    variations?: CreateMediaVariationDto[],
-  ): Promise<Media> {
-    const media = await this.repo.create(createMediaDto);
+  async create(media: CreateMediaDto, variations?: string[]): Promise<Media> {
+    const newMedia = await this.repo.save(media);
 
     if (variations) {
-      media.variations = [];
-      variations.forEach(async (variation) => {
-        const vari = new MediaVariation();
-        vari.path = variation.path;
-        vari.type = variation.type;
-        vari.width = variation.width;
-        vari.height = variation.height;
-        media.variations.push(vari);
-      });
+      await this.imageService.generateVariations(
+        `${media.path}/${media.title}`,
+        media.path,
+        variations,
+        newMedia.id,
+      );
     }
-
-    const newMedia = await this.repo.save(media);
 
     return newMedia;
   }
@@ -57,6 +51,9 @@ export class MediaService {
       where: { id },
       relations: ['variations'],
     });
+    if (!media) {
+      throw new NotFoundException(`Media with ID ${id} not found`);
+    }
     return media;
   }
 
@@ -75,11 +72,10 @@ export class MediaService {
   async remove(id: number): Promise<Media> {
     const media = await this.repo.findOne({
       where: { id },
-      relations: ['variations'],
     });
     if (!media) {
       throw new NotFoundException(`Media with ID ${id} not found`);
     }
-    return this.repo.remove(media);
+    return await this.repo.remove(media);
   }
 }

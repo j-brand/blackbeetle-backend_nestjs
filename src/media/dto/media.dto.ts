@@ -1,6 +1,10 @@
 import { Expose } from "class-transformer";
 
 export class MediaDto{
+
+    @Expose()
+    id: number
+
     @Expose()
     path: string;
 

@@ -32,4 +32,20 @@ export const variations: ImageVariation[] = [
     format: 'webp',
     method: 'resize',
   },
+  {
+    name: 'og_image',
+    width: 1200,
+    height: 630,
+    slug: '_og',
+    format: 'webp',
+    method: 'resize',
+  },
+  {
+    name: 'album_cover',
+    width: null,
+    height: 300,
+    slug: '_cover',
+    format: 'webp',
+    method: 'resize',
+  },
 ];

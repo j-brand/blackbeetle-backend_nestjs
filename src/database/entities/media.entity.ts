@@ -41,8 +41,4 @@ export class Media {
   @OneToMany(() => AlbumMedia, (albumMedia) => albumMedia.media)
   albums: AlbumMedia[];
 
-  @AfterRemove()
-  deleteFile(){
-    
-  }
 }

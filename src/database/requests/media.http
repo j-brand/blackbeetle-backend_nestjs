@@ -1,5 +1,8 @@
+
+@id = 5
+
 ### Get Media by ID
-GET {{$dotenv URL}}:{{$dotenv PORT}}/media/26
+GET {{$dotenv URL}}:{{$dotenv PORT}}/media/{{id}}
 
 ### Delete Media by ID
-DELETE {{$dotenv URL}}:{{$dotenv PORT}}/media/26
+DELETE {{$dotenv URL}}:{{$dotenv PORT}}/media/{{id}}

@@ -5,7 +5,6 @@ export class CreateAlbumDto {
   @IsString()
   title: string;
 
-  @IsOptional()
   @IsString()
   slug: string;
 

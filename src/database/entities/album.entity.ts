@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Media } from '@entities/media.entity';
 import { AlbumMedia } from './album_media.entity';
@@ -18,10 +19,16 @@ export class Album {
   @Column()
   title: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ unique: true })
   slug: string;
 
-  @OneToOne(() => Media, { nullable: true })
+  @OneToOne(() => Media, {
+    nullable: true,
+    eager: true,
+    cascade: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn()
   title_image: Media;
 
   @Column({ nullable: true })
@@ -43,7 +50,6 @@ export class Album {
     nullable: true,
     eager: true,
     cascade: true,
-    onDelete: 'CASCADE',
   })
   media: AlbumMedia[];
 }

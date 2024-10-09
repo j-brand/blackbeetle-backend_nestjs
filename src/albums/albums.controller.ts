@@ -8,21 +8,21 @@ import {
   Delete,
   UseInterceptors,
   UploadedFiles,
+  UploadedFile,
+  UseFilters,
 } from '@nestjs/common';
 import { AlbumsService } from '@albums/albums.service';
 import { CreateAlbumDto } from '@albums/dto/create-album.dto';
 import { UpdateAlbumDto } from '@albums/dto/update-album.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
   diskStorageConf,
   imageFileFilter,
-} from '@app/shared/upload/upload.utils';
-import { AddImagesDto } from './dto/add-image.dto';
-import { MediaService } from '@app/media/media.service';
-import { CreateMediaDto } from '@app/media/dto/create-media.dto';
-import { Serialize } from '@app/shared/interceptors/serialize/serialize.interceptor';
+} from '@shared/upload/upload.utils';
+import { MediaService } from '@media/media.service';
+import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
 import { AlbumDto } from './dto/album.dto';
-import { Media } from '@app/database/entities/media.entity';
+import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/delete-file-on-fail.filter';
 
 @Controller('albums')
 @Serialize(AlbumDto)
@@ -48,8 +48,25 @@ export class AlbumsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlbumDto: UpdateAlbumDto) {
-    return this.albumsService.update(+id, updateAlbumDto);
+  @UseInterceptors(
+    FileInterceptor('title_image', {
+      storage: diskStorageConf,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @UseFilters(DeleteFileOnFailFilter)
+  async update(
+    @Param('id') id: string,
+    @Body() data: UpdateAlbumDto,
+    @UploadedFile() title_image: Express.Multer.File,
+  ) {
+    const response = await this.albumsService.update(
+      +id,
+      data,
+      title_image ? title_image : null,
+    );
+
+    return response;
   }
 
   @Delete(':id')
@@ -66,23 +83,18 @@ export class AlbumsController {
   )
   async addImages(
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Param('id') albumId: string,
-    @Body() body: AddImagesDto,
+    @Param('id') id: string,
   ) {
-    const destinationPath = `storage/albums/${albumId}`;
-
-    let images = files.map((file) => {
-      let newMedia = new CreateMediaDto();
-      newMedia.title = file.filename;
-      newMedia.path = destinationPath;
-      newMedia.type = 'IMAGE';
-      return newMedia;
-    });
-
-    for (let i = 0; i <= images.length - 1; i++) {
-      await this.albumsService.addImage(+albumId, images[i]);
+    for (const file of files) {
+      await this.albumsService.addImage(+id, file);
     }
+  }
 
-    return this.albumsService.findOne(+albumId);
+  @Delete(':id/images/:imageId')
+  async removeImage(
+    @Param('id') id: string,
+    @Param('imageId') imageId: string,
+  ) {
+    return this.albumsService.removeImage(+id, +imageId);
   }
 }
