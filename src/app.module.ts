@@ -15,7 +15,6 @@ import { UsersModule } from '@users/users.module';
 import { AlbumsModule } from '@albums/albums.module';
 
 import { Seeder } from '@seed/users.seeder';
-import { APP_PIPE } from '@nestjs/core';
 
 @Module({
   imports: [

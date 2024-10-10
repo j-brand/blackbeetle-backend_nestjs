@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  AfterRemove,
 } from 'typeorm';
 import { MediaVariation } from '@entities/media_variation.entity';
 import { AlbumMedia } from './album_media.entity';

@@ -49,9 +49,7 @@ export class UploadController {
 
     return media;
   }
-  
 
-  
   @Post('images')
   @UseInterceptors(
     FilesInterceptor('files', 50, {
