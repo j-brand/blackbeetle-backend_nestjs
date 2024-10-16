@@ -13,6 +13,7 @@ import { SharedModule } from '@shared/shared.module';
 import { MediaModule } from '@media/media.module';
 import { UsersModule } from '@users/users.module';
 import { AlbumsModule } from '@albums/albums.module';
+import { StoriesModule } from '@stories/stories.module';
 
 import { Seeder } from '@seed/users.seeder';
 
@@ -25,6 +26,7 @@ import { Seeder } from '@seed/users.seeder';
     AuthModule,
     SharedModule,
     MediaModule,
+    StoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService, Seeder],
