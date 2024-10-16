@@ -19,9 +19,8 @@ import {
   diskStorageConf,
   imageFileFilter,
 } from '@shared/upload/upload.utils';
-import { MediaService } from '@media/media.service';
 import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
-import { AlbumDto } from './dto/album.dto';
+import { AlbumDto } from '@albums/dto/album.dto';
 import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/delete-file-on-fail.filter';
 
 @Controller('albums')
@@ -29,7 +28,6 @@ import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/dele
 export class AlbumsController {
   constructor(
     private readonly albumsService: AlbumsService,
-    private readonly mediaService: MediaService,
   ) {}
 
   @Post()
