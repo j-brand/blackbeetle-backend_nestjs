@@ -20,6 +20,9 @@ export class MediaController {
   @Delete(':id')
   async remove(@Param('id') id: string) {
     const media = await this.mediaService.remove(+id);
+    if (!media) {
+      throw new NotFoundException();
+    }
     fs.unlinkSync(media.path);
     if (media.variations) {
       media.variations.forEach((variation) => {
