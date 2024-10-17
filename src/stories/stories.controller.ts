@@ -1,7 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { StoriesService } from './stories.service';
-import { CreateStoryDto } from './dto/create-story.dto';
-import { UpdateStoryDto } from './dto/update-story.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseInterceptors,
+  UseFilters,
+  UploadedFile,
+} from '@nestjs/common';
+import { StoriesService } from '@stories/stories.service';
+import { CreateStoryDto } from '@stories/dto/create-story.dto';
+import { UpdateStoryDto } from '@stories/dto/update-story.dto';
+import { diskStorageConf, imageFileFilter } from '@shared/upload/upload.utils';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/delete-file-on-fail.filter';
 
 @Controller('stories')
 export class StoriesController {
@@ -23,8 +37,24 @@ export class StoriesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStoryDto: UpdateStoryDto) {
-    return this.storiesService.update(+id, updateStoryDto);
+  @UseInterceptors(
+    FileInterceptor('title_image', {
+      storage: diskStorageConf,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @UseFilters(DeleteFileOnFailFilter)
+  async update(
+    @Param('id') id: string,
+    @Body() data: UpdateStoryDto,
+    @UploadedFile() title_image: Express.Multer.File,
+  ) {
+    const response = await this.storiesService.update(
+      +id,
+      data,
+      title_image ? title_image : null,
+    );
+    return response;
   }
 
   @Delete(':id')

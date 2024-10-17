@@ -37,10 +37,13 @@ export class StoriesService {
   }
 
   async findOne(id: number): Promise<Story> {
-    const story = this.repo.findOne({
+    const story = await this.repo.findOne({
       where: { id },
       relations: ['posts', 'title_image'],
     });
+    if (!story) {
+      throw new NotFoundException(`Story with ID ${id} not found`);
+    }
     return story;
   }
 
