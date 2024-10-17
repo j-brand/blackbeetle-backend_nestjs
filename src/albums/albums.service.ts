@@ -177,7 +177,7 @@ export class AlbumsService {
     return album;
   }
 
-  async swapAlbumImages(
+  async updateImageOrder(
     albumId: number,
     imageId1: number,
     imageId2: number,

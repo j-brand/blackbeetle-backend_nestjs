@@ -20,7 +20,6 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
-      "@app/*": ["src/*"],
       "@entities/*": ["src/database/entities/*"],
       "@migrations/*": ["src/database/migrations/*"],
       "@seed/*": ["src/database/seed/*"],
@@ -28,11 +27,13 @@
       "@users/*": ["src/users/*"],
       "@albums/*": ["src/albums/*"],
       "@stories/*": ["src/stories/*"],
+      "@posts/*": ["src/stories/posts/*"],
       "@media/*": ["src/media/*"],
       "@shared/*": ["src/shared/*"],
       "@upload/*": ["src/shared/upload/*"],
       "@database/*": ["src/database/*"],
-      "@subscribers/*": ["src/database/subscribers/*"]
+      "@subscribers/*": ["src/database/subscribers/*"],
+      "@app/*": ["src/*"]
     }
   }
 }

@@ -7,7 +7,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { MediaVariation } from '@entities/media_variation.entity';
-import { AlbumMedia } from './album_media.entity';
+import { AlbumMedia } from '@entities/album_media.entity';
+import { PostMedia } from '@entities/post_media.entity';
 
 @Entity()
 export class Media {
@@ -39,5 +40,8 @@ export class Media {
 
   @OneToMany(() => AlbumMedia, (albumMedia) => albumMedia.media)
   albums: AlbumMedia[];
+  
+  @OneToMany(() => PostMedia, (postMedia) => postMedia.media)
+  posts: AlbumMedia[];
 
 }
