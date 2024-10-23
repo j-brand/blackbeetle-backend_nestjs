@@ -15,7 +15,7 @@ let typeormConfig = {
   database: process.env.TYPEORM_DBNAME,
   synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
   logging: true,
-  entities: ['@entities/*.entity.ts'],
+  entities: [__dirname + '/../**/*.entity.js'],
   subscribers: [MediaSubscriber, AlbumSubscriber],
   //entities: [User, Album, Media, MediaVariation, AlbumMedia],
   migrations: ['@migrations/*.js'],
