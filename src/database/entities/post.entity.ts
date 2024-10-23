@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { User } from '@entities/user.entity';
 import { Story } from '@entities/story.entity';
+import { Comment } from '@entities/comment.entity';
 import { PostMedia } from '@entities/post_media.entity';
 
 export enum PostType {
@@ -35,14 +36,19 @@ export class Post {
   @Column()
   content: string;
 
-  @Column()
+  @Column({ default: 1 })
   order: number;
 
-  @Column({ type: 'enum', default: PostType.HTML })
+  @Column({ type: 'simple-enum', enum: PostType, default: PostType.HTML })
   type: PostType;
 
   @Column({ default: false })
   active: boolean;
+
+  @ManyToOne(() => Comment, (comment) => comment.post, {
+    nullable: true
+  })
+  comments: Comment[];
 
   @OneToMany(() => PostMedia, (postMedia) => postMedia.post, {
     nullable: true,

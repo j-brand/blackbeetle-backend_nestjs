@@ -1,5 +1,4 @@
-import { Post, PostType } from '@entities/post.entity';
-import { Story } from '@entities/story.entity';
+import { PostType } from '@entities/post.entity';
 import { User } from '@entities/user.entity';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
@@ -10,10 +9,12 @@ export class CreatePostDto {
   @IsString()
   content: string;
 
+  @IsOptional()
   author: User;
+  
+  story_id: number;
 
-  story: Story;
-
+  @IsOptional()
   @IsNumber()
   order: number;
 

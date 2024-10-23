@@ -7,24 +7,29 @@ import { UpdatePostDto } from '@posts/dto/update-post.dto';
 import { MediaService } from '@media/media.service';
 import { CreateMediaDto } from '@media/dto/create-media.dto';
 import { PostMedia } from '@entities/post_media.entity';
+import { StoriesService } from '@stories/stories.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post) private repo: Repository<Post>,
-    private readonly mediaService: MediaService,
     @InjectRepository(PostMedia) private postMediaRepo: Repository<PostMedia>,
+    private readonly mediaService: MediaService,
+    private readonly storyService: StoriesService
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const post = this.repo.create(createPostDto);
+    const story = await this.storyService.findOne(createPostDto.story_id);
+    console.log(story.posts);
+    createPostDto.order = story.posts.length + 1;
     return this.repo.save(post);
   }
 
   async findOne(id: number): Promise<Post> {
     const post = await this.repo.findOne({
       where: { id },
-      relations: ['media'],
+      relations: ['media', 'comments'],
     });
     this.ensurePostExists(post, id);
     return post;
