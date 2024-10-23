@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   UploadedFile,
   UseFilters,
+  Request,
 } from '@nestjs/common';
 import { AlbumsService } from '@albums/albums.service';
 import { CreateAlbumDto } from '@albums/dto/create-album.dto';

@@ -2,6 +2,7 @@ import { AlbumMedia } from '@app/database/entities/album_media.entity';
 import { Media } from '@app/database/entities/media.entity';
 import { Expose, Transform, Type } from 'class-transformer';
 import { AlbumMediaDto } from './album-media.dto';
+import { MediaDto } from '@media/dto/media.dto';
 
 export class AlbumDto {
 
@@ -24,6 +25,7 @@ export class AlbumDto {
   end_date: Date;
 
   @Expose()
+  @Type(() => MediaDto)
   title_image: Media;
 
   @Expose()

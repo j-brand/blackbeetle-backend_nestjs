@@ -26,6 +26,7 @@ export class AlbumsService {
     const exists = await this.repo.findOne({
       where: { slug: createAlbumDto.slug },
     });
+    
     if (exists) {
       throw new UnprocessableEntityException(
         'Album with this slug already exists',
@@ -45,6 +46,7 @@ export class AlbumsService {
       where: { id },
       relations: ['media', 'title_image'],
     });
+    this.ensureAlbumExists(album, id);
     return album;
   }
 
@@ -56,9 +58,7 @@ export class AlbumsService {
     const album = await this.repo.findOne({
       where: { id },
     });
-    if (!album) {
-      throw new NotFoundException(`Album with ID ${id} not found`);
-    }
+    this.ensureAlbumExists(album, id);
 
     let oldImage = null;
     if (title_image) {
@@ -91,9 +91,7 @@ export class AlbumsService {
       where: { id },
       relations: ['media'],
     });
-    if (!album) {
-      throw new NotFoundException(`Album with ID ${id} not found`);
-    }
+    this.ensureAlbumExists(album, id);
 
     album.media.forEach((media) => {
       this.mediaService.remove(media.media.id);
@@ -116,9 +114,7 @@ export class AlbumsService {
       relations: ['media'],
     });
 
-    if (!album) {
-      throw new NotFoundException(`Album with ID ${id} not found`);
-    }
+    this.ensureAlbumExists(album, id);
 
     // Create a new media, store it in the database and create image variations
     const newMedia = await this.mediaService.create(
@@ -154,10 +150,7 @@ export class AlbumsService {
       where: { id: albumId },
       relations: ['media'],
     });
-
-    if (!album) {
-      throw new NotFoundException(`Album with ID ${albumId} not found`);
-    }
+    this.ensureAlbumExists(album, albumId);
 
     // Find the AlbumMedia instance linking the media to the album
     const albumImage = album.media.find((image) => image.media.id === imageId);
@@ -210,5 +203,11 @@ export class AlbumsService {
 
     // Save the updated AlbumMedia entries back to the database
     await this.albumMediaRepo.save([albumMedia1, albumMedia2]);
+  }
+  
+  private ensureAlbumExists(album: Album | undefined, id: number): void {
+    if (!album) {
+      throw new NotFoundException(`Album with ID ${id} not found`);
+    }
   }
 }
