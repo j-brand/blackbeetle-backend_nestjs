@@ -32,9 +32,6 @@ export class Story {
   description: string;
 
   @Column()
-  path: string;
-
-  @Column()
   slug: string;
 
   @OneToMany(() => Post, (post) => post.story)

@@ -64,7 +64,7 @@ export class StoriesService {
 
       const newImage = await this.mediaService.create(
         {
-          title: title_image.fieldname,
+          title: title_image.filename,
           path: `storage/stories/${id}`,
           type: 'IMAGE',
         } as CreateMediaDto,
