@@ -1,4 +1,4 @@
-import { UnprocessableEntityException } from '@nestjs/common';
+import { Logger, UnprocessableEntityException } from '@nestjs/common';
 import { basename, extname } from 'path';
 import * as fs from 'fs';
 const fsPromises = require('fs/promises');
@@ -23,15 +23,6 @@ export const getDestinationCallback = (req, file, callback) => {
   const destination = getDestinationFromUri(req);
   fs.mkdirSync(destination, { recursive: true });
   callback(null, destination);
-};
-
-// DELETE?
-const getDestination = (req) => {
-  const entity_id = req.body.entity_id;
-  const path = req.body.path;
-  const destination = `storage/${path}/${entity_id}`;
-
-  return destination;
 };
 
 const getDestinationFromUri = (req: Request) => {
@@ -64,7 +55,7 @@ const getFileName = async (req: Request, file: Express.Multer.File) => {
       counter++;
     }
   } catch (error) {
-    // Handle error if needed
+    Logger.error(error);
   }
   return newFileName;
 };
