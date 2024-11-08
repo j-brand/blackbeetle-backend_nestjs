@@ -27,6 +27,7 @@
 		"github.copilot-chat",
 		"github.copilot",
 		"pflannery.vscode-versionlens",
+		"postman.postman-for-vscode",
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
