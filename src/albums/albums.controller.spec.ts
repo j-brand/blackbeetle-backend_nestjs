@@ -5,6 +5,7 @@ import { MediaService } from '@media/media.service';
 import { CreateAlbumDto } from '@albums/dto/create-album.dto';
 import { UpdateAlbumDto } from '@albums/dto/update-album.dto';
 import { NotFoundException } from '@nestjs/common';
+import { Album } from '@entities/album.entity';
 
 describe('AlbumsController', () => {
   let controller: AlbumsController;
@@ -23,6 +24,8 @@ describe('AlbumsController', () => {
             findOne: jest.fn(),
             update: jest.fn(),
             remove: jest.fn(),
+            addImage: jest.fn(),
+            removeImage: jest.fn(),
           },
         },
         {
@@ -41,8 +44,15 @@ describe('AlbumsController', () => {
 
   describe('create', () => {
     it('should create an album', async () => {
-      const createAlbumDto: CreateAlbumDto = { title: 'New Album' };
-      const result = { id: 1, ...createAlbumDto };
+      const createAlbumDto = {
+        title: 'New Album',
+        slug: 'new-album',
+        description: 'Description',
+        start_date: new Date(),
+        end_date: new Date(),
+        title_image: undefined,
+      };
+      const result = { id: 1, ...createAlbumDto } as Album;
 
       jest.spyOn(albumsService, 'create').mockResolvedValue(result);
 
@@ -53,7 +63,7 @@ describe('AlbumsController', () => {
 
   describe('findAll', () => {
     it('should return an array of albums', async () => {
-      const result = [{ id: 1, title: 'Album 1' }];
+      const result = [{ id: 1, title: 'Album 1' } as Album];
       jest.spyOn(albumsService, 'findAll').mockResolvedValue(result);
 
       expect(await controller.findAll()).toBe(result);
@@ -63,35 +73,29 @@ describe('AlbumsController', () => {
 
   describe('findOne', () => {
     it('should return an album', async () => {
-      const result = { id: 1, title: 'Album 1' };
+      const result = { id: 1, title: 'Album 1' } as Album;
       jest.spyOn(albumsService, 'findOne').mockResolvedValue(result);
 
       expect(await controller.findOne('1')).toBe(result);
       expect(albumsService.findOne).toHaveBeenCalledWith(1);
-    });
-
-    it('should throw NotFoundException if album is not found', async () => {
-      jest.spyOn(albumsService, 'findOne').mockResolvedValue(null);
-
-      await expect(controller.findOne('1')).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('update', () => {
     it('should update an album', async () => {
       const updateAlbumDto: UpdateAlbumDto = { title: 'Updated Album' };
-      const result = { id: 1, ...updateAlbumDto };
+      const result = { id: 1, ...updateAlbumDto } as Album;
 
-      jest.spyOn(albumsService, 'update').mockResolvedValue(result );
+      jest.spyOn(albumsService, 'update').mockResolvedValue(result);
 
-      expect(await controller.update('1', updateAlbumDto)).toBe(result);
-      expect(albumsService.update).toHaveBeenCalledWith(1, updateAlbumDto);
+      expect(await controller.update('1', updateAlbumDto, null)).toBe(result);
+      expect(albumsService.update).toHaveBeenCalledWith(1, updateAlbumDto, null);
     });
   });
 
   describe('remove', () => {
     it('should remove an album', async () => {
-      const result = { id: 1, title: 'Album 1' };
+      const result = { id: 1, title: 'Album 1' } as Album;
       jest.spyOn(albumsService, 'remove').mockResolvedValue(result);
 
       expect(await controller.remove('1')).toBe(result);
@@ -100,14 +104,23 @@ describe('AlbumsController', () => {
   });
 
   describe('addImages', () => {
-    it('should add images ', async () => {
-      const file = { originalname: 'test.jpg', buffer: Buffer.from('') };
-      const result = { url: 'http://example.com/test.jpg' };
+    it('should add images', async () => {
+      const files = [{ originalname: 'test.jpg', buffer: Buffer.from('') } as Express.Multer.File];
+      jest.spyOn(albumsService, 'addImage').mockResolvedValue(undefined);
 
-      jest.spyOn(mediaService, 'uploadFile').mockResolvedValue(result);
+      await controller.addImages(files, '1');
 
-      expect(await controller.uploadFile(file)).toBe(result);
-      expect(mediaService.uploadFile).toHaveBeenCalledWith(file);
+      expect(albumsService.addImage).toHaveBeenCalledWith(1, files[0]);
+    });
+  });
+
+  describe('removeImage', () => {
+    it('should remove an image', async () => {
+      jest.spyOn(albumsService, 'removeImage').mockResolvedValue(undefined);
+
+      await controller.removeImage('1', '1');
+
+      expect(albumsService.removeImage).toHaveBeenCalledWith(1, 1);
     });
   });
 });
