@@ -21,7 +21,6 @@ export class PostsService {
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const post = this.repo.create(createPostDto);
     const story = await this.storyService.findOne(createPostDto.story_id);
-    console.log(story.posts);
     createPostDto.order = story.posts.length + 1;
     return this.repo.save(post);
   }
