@@ -4,6 +4,7 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
 export class CreateStoryDto {
   @IsString()
   title: string;
+  
   @IsString()
   slug: string;
 
@@ -12,7 +13,7 @@ export class CreateStoryDto {
 
   @IsOptional()
   @IsString()
-  decsription: string;
+  description: string;
 
   @IsOptional()
   @IsBoolean()
