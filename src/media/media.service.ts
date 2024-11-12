@@ -9,6 +9,8 @@ import { UpdateMediaDto } from '@media/dto/update-media.dto';
 import { MediaVariation } from '@entities/media_variation.entity';
 import { CreateMediaVariationDto } from '@media/dto/create-media-variation.dto';
 import { ImageService } from './image.service';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class MediaService {
@@ -20,6 +22,17 @@ export class MediaService {
   ) {}
 
   async create(media: CreateMediaDto, variations?: string[]): Promise<Media> {
+    const filePath = path.join(media.upload_path, media.title);
+    const destinationPath = path.join(media.path, media.title);
+
+    if (fs.existsSync(filePath)) {
+      // Ensure the destination directory exists
+      fs.mkdirSync(media.path, { recursive: true });
+      fs.copyFileSync(filePath, destinationPath);
+    } else {
+      throw new Error(`File at path ${filePath} does not exist`);
+    }
+
     const newMedia = await this.repo.save(media);
 
     if (variations) {
