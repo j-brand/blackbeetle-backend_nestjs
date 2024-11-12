@@ -45,7 +45,7 @@ export class Post {
   @Column({ default: false })
   active: boolean;
 
-  @ManyToOne(() => Comment, (comment) => comment.post, {
+  @OneToMany(() => Comment, (comment) => comment.post, {
     nullable: true
   })
   comments: Comment[];
