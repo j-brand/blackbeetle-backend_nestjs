@@ -13,6 +13,9 @@ export class CreateMediaDto {
   @IsString()
   path: string;
 
+  @IsString()
+  upload_path: string;
+
   //Delete?
   @IsOptional()
   @IsString()
