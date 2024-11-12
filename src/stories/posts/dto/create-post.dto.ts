@@ -1,6 +1,6 @@
 import { PostType } from '@entities/post.entity';
 import { User } from '@entities/user.entity';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -12,6 +12,7 @@ export class CreatePostDto {
   @IsOptional()
   author: User;
   
+  @IsNotEmpty()
   story_id: number;
 
   @IsOptional()
