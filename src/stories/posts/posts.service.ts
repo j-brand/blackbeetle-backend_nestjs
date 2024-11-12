@@ -15,12 +15,13 @@ export class PostsService {
     @InjectRepository(Post) private repo: Repository<Post>,
     @InjectRepository(PostMedia) private postMediaRepo: Repository<PostMedia>,
     private readonly mediaService: MediaService,
-    private readonly storyService: StoriesService
+    private readonly storyService: StoriesService,
   ) {}
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const post = this.repo.create(createPostDto);
     const story = await this.storyService.findOne(createPostDto.story_id);
+    post.story = story;
     createPostDto.order = story.posts.length + 1;
     return this.repo.save(post);
   }
@@ -47,13 +48,18 @@ export class PostsService {
     await this.repo.remove(post);
   }
 
-  async addImage(id: number, image: Express.Multer.File): Promise<Post> {
-    let post = await this.repo.findOne({ where: { id } });
+  async addImage(id: number, image: Express.Multer.File): Promise<PostMedia[]> {
+    let post = await this.repo.findOne({
+      where: { id },
+      relations: ['story', 'media'],
+    });
+
     this.ensurePostExists(post, id);
 
     const newMedia = await this.mediaService.create(
       {
         title: image.filename,
+        upload_path: `storage/upload/tmp`,
         path: `storage/stories/${post.story.id}/posts/${id}`,
         type: 'IMAGE',
       } as CreateMediaDto,
@@ -66,7 +72,11 @@ export class PostsService {
     postImage.order = post.media.length + 1;
     post.media.push(postImage);
 
-    return await this.repo.save(post);
+    const save = await this.repo.save(post);
+
+    // console.log(save);
+
+    return save.media;
   }
 
   async removeImage(postId: number, mediaId: number): Promise<Post> {

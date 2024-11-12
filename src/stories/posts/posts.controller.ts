@@ -19,7 +19,7 @@ import { diskStorageConf, imageFileFilter } from '@shared/upload/upload.utils';
 import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
 import { PostDto } from './dto/post.dto';
 import { AuthGuard } from '@auth/guards/auth.guard';
-
+import { PostMedia } from '@entities/post_media.entity';
 
 @Controller('posts')
 @Serialize(PostDto)
@@ -59,8 +59,11 @@ export class PostsController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Param('id') id: string,
   ) {
+    let images: PostMedia[] = [];
     for (const file of files) {
-      await this.postsService.addImage(+id, file);
+      images = await this.postsService.addImage(+id, file);
     }
+
+    return images;
   }
 }
