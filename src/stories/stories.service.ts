@@ -66,6 +66,7 @@ export class StoriesService {
         {
           title: title_image.filename,
           path: `storage/stories/${id}`,
+          upload_path: `storage/upload/tmp`,
           type: 'IMAGE',
         } as CreateMediaDto,
         ['story_cover', 'og_image'],

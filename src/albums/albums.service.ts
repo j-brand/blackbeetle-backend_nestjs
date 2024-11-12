@@ -68,6 +68,7 @@ export class AlbumsService {
         {
           title: title_image.filename,
           path: `storage/albums/${id}`,
+          upload_path: `storage/upload/tmp`,
           type: 'IMAGE',
         } as CreateMediaDto,
         ['album_cover', 'og_image'],
@@ -121,6 +122,7 @@ export class AlbumsService {
       {
         title: image.filename,
         path: `storage/albums/${id}`,
+        upload_path: `storage/upload/tmp`,
         type: 'IMAGE',
       } as CreateMediaDto,
       ['webp', 'large', 'thumbnail'],

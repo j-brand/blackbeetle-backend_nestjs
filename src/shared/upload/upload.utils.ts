@@ -27,6 +27,7 @@ export const getDestinationCallback = (req, file, callback) => {
 
 const getDestinationFromUri = (req: Request) => {
   const [entity, entity_id] = req.url.split('/').filter((part) => part !== '');
+  
   const destination = `storage/${entity}/${entity_id}`;
 
   return destination;
@@ -82,6 +83,6 @@ const fileExists = async (path: string): Promise<boolean> => {
  * @type {StorageEngine}
  */
 export const diskStorageConf = diskStorage({
-  destination: getDestinationCallback,
+  destination: "storage/upload/tmp",
   filename: getFileNameCallback,
 });
