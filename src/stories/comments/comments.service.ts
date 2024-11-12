@@ -13,7 +13,12 @@ export class CommentsService {
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const comment = this.repo.create(createCommentDto);
+
+    const comment = this.repo.create({
+      ...createCommentDto,
+      post: { id: createCommentDto.post_id },
+    });
+
     return this.repo.save(comment);
   }
 
@@ -27,7 +32,10 @@ export class CommentsService {
     return comment;
   }
 
-  async update(id: number, updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async update(
+    id: number,
+    updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
     await this.repo.update(id, updateCommentDto);
     const updatedComment = await this.repo.findOne({ where: { id } });
     this.ensureCommentExists(updatedComment, id);
