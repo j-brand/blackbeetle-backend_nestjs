@@ -1,15 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@app/app.module';
-import { Seeder } from '@seed/users.seeder';
+import { Logger } from '@nestjs/common';
+import { Seeder } from './seed.seeder';
 
 async function bootstrap() {
-    
-  console.log('Seeding started');
+  Logger.log('Seeding started', 'Seeder');
   const app = await NestFactory.createApplicationContext(AppModule);
-  const seeder = app.get(Seeder);
+
+  const seeder = new Seeder(app);
+
   try {
-    await seeder.generate(8);
-    console.log('Seeding complete');
+    await seeder.seed();
   } catch (error) {
     console.error('Seeding failed', error);
   } finally {
