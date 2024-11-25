@@ -9,7 +9,7 @@ export class CreateStoryDto {
   slug: string;
 
   @IsOptional()
-  title_image: Media;
+  title_image?: Media;
 
   @IsOptional()
   @IsString()

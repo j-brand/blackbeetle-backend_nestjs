@@ -9,7 +9,7 @@ export class CreateAlbumDto {
   slug: string;
 
   @IsOptional()
-  title_image: Media;
+  title_image?: Media;
 
   @IsOptional()
   @IsString()
@@ -17,9 +17,9 @@ export class CreateAlbumDto {
 
   @IsOptional()
   @IsDate()
-  start_date: Date;
+  start_date?: Date = new Date();
 
   @IsOptional()
   @IsDate()
-  end_date: Date;
+  end_date?: Date = new Date();
 }

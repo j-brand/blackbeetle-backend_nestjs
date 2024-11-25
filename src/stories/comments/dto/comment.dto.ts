@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
+import { format } from 'date-fns';
 
 export class CommentDto {
   @Expose()
@@ -8,5 +9,6 @@ export class CommentDto {
   content: string;
 
   @Expose()
+  @Transform(({ obj }) => format(obj.created_at, 'dd-MMM-yyyy'))
   created_at: Date;
 }
