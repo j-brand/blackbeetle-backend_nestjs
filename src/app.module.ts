@@ -15,7 +15,6 @@ import { UsersModule } from '@users/users.module';
 import { AlbumsModule } from '@albums/albums.module';
 import { StoriesModule } from '@stories/stories.module';
 
-import { Seeder } from '@seed/users.seeder';
 
 @Module({
   imports: [
@@ -29,6 +28,6 @@ import { Seeder } from '@seed/users.seeder';
     StoriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Seeder],
+  providers: [AppService],
 })
 export class AppModule {}
