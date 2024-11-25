@@ -4,6 +4,12 @@ import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from '@entities/comment.entity';
+import { CommentPageDto } from './dto/comment-page.dto';
+import { PageOptionsDto } from '@shared/pagination/page-options.dto';
+import { PageMetaDtoFactory } from '@shared/pagination/page-meta.dto';
+import { PageDto } from '@shared/pagination/page.dto';
+import { CommentDto } from './dto/comment.dto';
+import { PublicCommentDto } from './dto/public-comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -13,7 +19,6 @@ export class CommentsService {
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
-
     const comment = this.repo.create({
       ...createCommentDto,
       post: { id: createCommentDto.post_id },
@@ -30,6 +35,25 @@ export class CommentsService {
     const comment = await this.repo.findOne({ where: { id } });
     this.ensureCommentExists(comment, id);
     return comment;
+  }
+
+  async findByPost(
+    postId: number,
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<CommentDto | PublicCommentDto>> {
+    const [comments, itemCount] = await this.repo.findAndCount({
+      where: { post: { id: postId } },
+      order: { created_at: pageOptionsDto.order },
+      take: pageOptionsDto.take,
+      skip: pageOptionsDto.skip,
+    });
+
+    const pageMetaDto = PageMetaDtoFactory.create({
+      pageOptionsDto,
+      itemCount,
+    });
+
+    return new PageDto(comments, pageMetaDto);
   }
 
   async update(
