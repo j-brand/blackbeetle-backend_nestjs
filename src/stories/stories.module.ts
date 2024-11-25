@@ -7,6 +7,7 @@ import { PostsModule } from './posts/posts.module';
 import { MediaModule } from '@media/media.module';
 import { Media } from '@entities/media.entity';
 import { CommentsModule } from './comments/comments.module';
+import { PublicStoriesController } from './public-stories.controller';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { CommentsModule } from './comments/comments.module';
     MediaModule,
     CommentsModule,
   ],
-  controllers: [StoriesController],
+  controllers: [StoriesController, PublicStoriesController],
   providers: [StoriesService],
   exports: [StoriesService],
 })

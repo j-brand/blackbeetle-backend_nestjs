@@ -45,4 +45,8 @@ export class Story {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  get posts_count(): number {
+    return this.posts ? this.posts.length : 0;
+  }
 }
