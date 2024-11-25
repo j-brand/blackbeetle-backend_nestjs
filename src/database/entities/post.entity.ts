@@ -11,6 +11,7 @@ import { User } from '@entities/user.entity';
 import { Story } from '@entities/story.entity';
 import { Comment } from '@entities/comment.entity';
 import { PostMedia } from '@entities/post_media.entity';
+import { Exclude } from 'class-transformer';
 
 export enum PostType {
   HTML = 'HTML',
@@ -27,8 +28,14 @@ export class Post {
   @ManyToOne(() => User, (user) => user.posts)
   author: User;
 
+  @Column()
+  authorId: number;
+
   @ManyToOne(() => Story, (story) => story.posts)
   story: Story;
+
+  @Column()
+  storyId: number;
 
   @Column()
   title: string;
@@ -62,4 +69,8 @@ export class Post {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  get comments_count(): number {
+    return this.comments ? this.comments.length : 0;
+  }
 }

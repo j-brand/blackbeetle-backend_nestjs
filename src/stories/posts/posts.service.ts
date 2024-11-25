@@ -8,6 +8,11 @@ import { MediaService } from '@media/media.service';
 import { CreateMediaDto } from '@media/dto/create-media.dto';
 import { PostMedia } from '@entities/post_media.entity';
 import { StoriesService } from '@stories/stories.service';
+import { PageOptionsDto } from '@shared/pagination/page-options.dto';
+import { PageMetaDtoFactory } from '@shared/pagination/page-meta.dto';
+import { PublicPostDto } from './dto/public-post.dto';
+import { PostDto } from './dto/post.dto';
+import { PageDto } from '@shared/pagination/page.dto';
 
 @Injectable()
 export class PostsService {
@@ -24,6 +29,51 @@ export class PostsService {
     post.story = story;
     createPostDto.order = story.posts.length + 1;
     return this.repo.save(post);
+  }
+
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<PublicPostDto | PostDto>> {
+    const [items, itemCount] = await this.repo.findAndCount({
+      order: { order: pageOptionsDto.order },
+      take: pageOptionsDto.take,
+      skip: pageOptionsDto.skip,
+      relations: ['author', 'story'],
+    });
+
+    const pageMetaDto = PageMetaDtoFactory.create({
+      pageOptionsDto,
+      itemCount,
+    });
+
+    return new PageDto(items, pageMetaDto);
+  }
+
+  async findByStory(
+    storyId: number,
+    pageOptionsDto: PageOptionsDto,
+    active_only: boolean = false,
+  ): Promise<PageDto<PublicPostDto | PostDto>> {
+    const [items, itemCount] = await this.repo.findAndCount({
+      where: active_only
+        ? { story: { id: storyId, active: true } }
+        : { story: { id: storyId } },
+      order: { order: pageOptionsDto.order },
+      take: pageOptionsDto.take,
+      skip: pageOptionsDto.skip,
+      relations: ['author', 'story'],
+    });
+
+    if (!items.length) {
+      throw new NotFoundException('No stories found');
+    }
+
+    const pageMetaDto = PageMetaDtoFactory.create({
+      pageOptionsDto,
+      itemCount,
+    });
+
+    return new PageDto(items, pageMetaDto);
   }
 
   async findOne(id: number): Promise<Post> {

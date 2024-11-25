@@ -5,11 +5,7 @@ import { PostMediaDto } from './post-media.dto';
 import { format } from 'date-fns';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 
-export class PostDto {
-  @Expose()
-  @IsNumber()
-  id: number;
-
+export class PublicPostDto {
   @Expose()
   @IsString()
   title: string;
@@ -23,19 +19,12 @@ export class PostDto {
   storyId: number;
 
   @Expose()
-  @IsNumber()
-  authorId: number;
-
-  @Expose()
   @IsEnum(PostType)
   type: PostType;
 
   @Expose()
   @IsNumber()
   order: number;
-
-  @Expose()
-  active: boolean;
 
   @Expose()
   @Type(() => PostMediaDto)

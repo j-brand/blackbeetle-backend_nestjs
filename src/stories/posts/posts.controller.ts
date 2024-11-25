@@ -10,6 +10,8 @@ import {
   UploadedFiles,
   UseGuards,
   Request,
+  Query,
+  SetMetadata,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -20,14 +22,25 @@ import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor'
 import { PostDto } from './dto/post.dto';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { PostMedia } from '@entities/post_media.entity';
+import { PageOptionsDto } from '@shared/pagination/page-options.dto';
+
+export class test {
+  query?: string = 'default';
+}
 
 @Controller('posts')
 @Serialize(PostDto)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @UseGuards(AuthGuard)
+  @Get()
+  @SetMetadata('paginate', true)
+  async getPosts(@Query() pageOptionsDto: PageOptionsDto) {
+    return await this.postsService.findAll(pageOptionsDto);
+  }
+
   @Post()
+  @UseGuards(AuthGuard)
   create(@Body() createPostDto: CreatePostDto, @Request() req) {
     createPostDto.author = req.user;
     return this.postsService.create(createPostDto);
@@ -36,6 +49,15 @@ export class PostsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(+id);
+  }
+
+  @Get('story/:storyId')
+  @SetMetadata('paginate', true)
+  findByStory(
+    @Param('storyId') storyId: string,
+    @Query() pageOptionsDto: PageOptionsDto,
+  ) {
+    return this.postsService.findByStory(+storyId, pageOptionsDto);
   }
 
   @Patch(':id')
