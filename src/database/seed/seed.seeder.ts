@@ -26,7 +26,7 @@ export class Seeder {
   }
 
   async seed() {
-    const albums = await this.albumsSeeder.seed(8);
+    const albums = await this.albumsSeeder.seed(3);
     const users = await this.usersSeeder.seed(8);
     const stories = await this.storiesSeeder.seed(8);
     const posts = await this.postsSeeder.seed(20, users, stories);
