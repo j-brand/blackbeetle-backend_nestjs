@@ -19,12 +19,12 @@
     "test:debug": "node --env-file=.env.test --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "node --env-file=.env.test node_modules/.bin/jest --config ./test/jest-e2e.json",
     "typeorm": "node -r tsconfig-paths/register --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js -d ./src/database/typeorm.config.ts",
-    "typeorm:show": "node --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js migration:show -d ./src/database/typeorm.config.ts",
+    "typeorm:show": "node -r tsconfig-paths/register --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js migration:show -d ./src/database/typeorm.config.ts",
     "typeorm:migrate": "node -r tsconfig-paths/register --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js migration:run -d ./src/database/typeorm.config.ts",
     "typeorm:generate": " node -r tsconfig-paths/register --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js migration:generate ./src/database/migrations/initial-schema -d ./src/database/typeorm.config.ts -o",
     "typeorm:drop": " node -r tsconfig-paths/register --env-file=.env.development node_modules/typeorm/cli-ts-node-commonjs.js schema:drop -d ./src/database/typeorm.config.ts",
-    "db:rebuild":"npm run typeorm:drop && npm run typeorm:generate && npm run typeorm:migrate",
-    "seed": "node --env-file=.env.development node_modules/.bin/ts-node ./src/database/seed/bootstrap.seed.ts"
+    "db:rebuild": "npm run typeorm:drop && npm run typeorm:generate && npm run typeorm:migrate",
+    "seed": "node --env-file=.env.development -r tsconfig-paths/register -r ts-node/register ./src/database/seed/bootstrap.seed.ts"
   },
   "dependencies": {
     "@nestjs/bullmq": "^10.2.1",
@@ -38,6 +38,7 @@
     "bullmq": "^5.12.11",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "date-fns": "^4.1.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
     "sharp": "^0.33.5",
