@@ -33,6 +33,7 @@
       "@upload/*": ["src/shared/upload/*"],
       "@database/*": ["src/database/*"],
       "@subscribers/*": ["src/database/subscribers/*"],
+      "@storage/*": ["src/storage/*"],
       "@app/*": ["src/*"]
     }
   }

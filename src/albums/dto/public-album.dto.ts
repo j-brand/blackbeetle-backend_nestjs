@@ -1,16 +1,11 @@
-import { AlbumMedia } from '@app/database/entities/album_media.entity';
-import { Media } from '@app/database/entities/media.entity';
+import { Media } from '@entities/media.entity';
 import { Expose, Transform, Type } from 'class-transformer';
 import { AlbumMediaDto } from './album-media.dto';
-import { MediaDto } from '@media/dto/media.dto';
-import { IsBoolean, IsDateString, IsNumber, IsString } from 'class-validator';
+import { AlbumMedia } from '@entities/album_media.entity';
 import { format } from 'date-fns';
+import { IsString } from 'class-validator';
 
-export class AlbumDto {
-  @Expose()
-  @IsNumber()
-  id: number;
-
+export class PublicAlbumDto {
   @Expose()
   @IsString()
   title: string;
@@ -24,21 +19,15 @@ export class AlbumDto {
   description: string;
 
   @Expose()
-  @IsBoolean()
-  active: boolean;
-
-  @Expose()
-  @Transform(({ obj }) => format(obj.end_date, 'dd-MMM-yyyy'))
-  @IsDateString()
+  @Transform(({ obj }) => format(obj.start_date, 'dd-MMM-yyyy'))
   start_date: Date;
 
   @Expose()
   @Transform(({ obj }) => format(obj.end_date, 'dd-MMM-yyyy'))
-  @IsDateString()
   end_date: Date;
 
   @Expose()
-  @Type(() => MediaDto)
+  @Type(() => PublicAlbumDto)
   title_image: Media;
 
   @Expose()

@@ -40,6 +40,9 @@ export class Album {
   @Column({ nullable: true })
   end_date: Date;
 
+  @Column({ default: false })
+  active: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 

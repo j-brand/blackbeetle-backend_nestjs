@@ -10,35 +10,45 @@ import {
   UploadedFiles,
   UploadedFile,
   UseFilters,
-  Request,
+  SetMetadata,
+  Query,
 } from '@nestjs/common';
 import { AlbumsService } from '@albums/albums.service';
 import { CreateAlbumDto } from '@albums/dto/create-album.dto';
 import { UpdateAlbumDto } from '@albums/dto/update-album.dto';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import {
-  diskStorageConf,
-  imageFileFilter,
-} from '@shared/upload/upload.utils';
+import { diskStorageConf, imageFileFilter } from '@shared/upload/upload.utils';
 import { Serialize } from '@shared/interceptors/serialize/serialize.interceptor';
 import { AlbumDto } from '@albums/dto/album.dto';
 import { DeleteFileOnFailFilter } from '@shared/filters/delete-file-on-fail/delete-file-on-fail.filter';
+import { PageDto } from '@shared/pagination/page.dto';
+import { PageOptionsDto } from '@shared/pagination/page-options.dto';
 
 @Controller('albums')
 @Serialize(AlbumDto)
 export class AlbumsController {
-  constructor(
-    private readonly albumsService: AlbumsService,
-  ) {}
+  constructor(private readonly albumsService: AlbumsService) {}
 
   @Post()
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumsService.create(createAlbumDto);
+  @UseInterceptors(
+    FileInterceptor('title_image', {
+      storage: diskStorageConf,
+      fileFilter: imageFileFilter,
+    }),
+  )
+  @UseFilters(DeleteFileOnFailFilter)
+  create(
+    @Body() createAlbumDto: CreateAlbumDto,
+    @UploadedFile() title_image: Express.Multer.File,
+  ) {
+    console.log(title_image);
+    return this.albumsService.create(createAlbumDto, title_image);
   }
 
   @Get()
-  findAll() {
-    return this.albumsService.findAll();
+  @SetMetadata('paginate', true)
+  async findAll(@Query() pageOptionsDto: PageOptionsDto):Promise<PageDto<AlbumDto>> {
+    return await  this.albumsService.findAll(pageOptionsDto) as PageDto<AlbumDto>;
   }
 
   @Get(':id')

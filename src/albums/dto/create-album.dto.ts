@@ -1,5 +1,6 @@
 import { Media } from '@entities/media.entity';
-import { IsDate, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateAlbumDto {
   @IsString()
@@ -16,10 +17,14 @@ export class CreateAlbumDto {
   description: string;
 
   @IsOptional()
-  @IsDate()
-  start_date?: Date = new Date();
+  @IsBoolean()
+  active?: boolean;
 
-  @IsOptional()
-  @IsDate()
-  end_date?: Date = new Date();
+  @IsNotEmpty()
+  @Type(() => Date)
+  start_date: Date;
+
+  @IsNotEmpty()
+  @Type(() => Date)
+  end_date: Date;
 }

@@ -7,10 +7,11 @@ import { MediaModule } from '@app/media/media.module';
 import { APP_PIPE } from '@nestjs/core';
 import { AlbumMedia } from '@app/database/entities/album_media.entity';
 import { Media } from '@app/database/entities/media.entity';
+import { PublicAlbumsController } from './public-albums.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Album, AlbumMedia, Media]), MediaModule],
-  controllers: [AlbumsController],
+  controllers: [AlbumsController, PublicAlbumsController],
   providers: [
     AlbumsService,
     { provide: APP_PIPE, useValue: new ValidationPipe({ whitelist: true }) },

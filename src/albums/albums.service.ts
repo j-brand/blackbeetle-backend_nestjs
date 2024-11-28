@@ -11,6 +11,13 @@ import { Album } from '@entities/album.entity';
 import { CreateMediaDto } from '@media/dto/create-media.dto';
 import { MediaService } from '@media/media.service';
 import { AlbumMedia } from '@database/entities/album_media.entity';
+import { PageDto } from '@shared/pagination/page.dto';
+import { AlbumDto } from './dto/album.dto';
+import { PublicAlbumDto } from './dto/public-album.dto';
+import { PageOptionsDto } from '@shared/pagination/page-options.dto';
+import { PageMetaDtoFactory } from '@shared/pagination/page-meta.dto';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class AlbumsService {
@@ -22,23 +29,51 @@ export class AlbumsService {
     private readonly albumMediaRepo: Repository<AlbumMedia>,
   ) {}
 
-  async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
+  async create(
+    createAlbumDto: CreateAlbumDto,
+    title_image?: Express.Multer.File,
+  ): Promise<Album> {
     const exists = await this.repo.findOne({
       where: { slug: createAlbumDto.slug },
     });
-    
+
     if (exists) {
       throw new UnprocessableEntityException(
         'Album with this slug already exists',
       );
     }
-
     const album = this.repo.create(createAlbumDto);
-    return this.repo.save(album);
+
+    let newAlbum = await this.repo.save(album);
+
+    if (title_image) {
+      newAlbum = await this.update(
+        newAlbum.id,
+        {} as UpdateAlbumDto,
+        title_image,
+      );
+    }
+
+    return newAlbum;
   }
 
-  async findAll(): Promise<Album[]> {
-    return this.repo.find();
+  async findAll(
+    pageOptionsDto: PageOptionsDto,
+    active_only?: boolean,
+  ): Promise<PageDto<AlbumDto | PublicAlbumDto>> {
+    const [albums, itemCount] = await this.repo.findAndCount({
+      where: active_only ? { active: true } : {},
+      order: { end_date: 'DESC' },
+      take: pageOptionsDto.take,
+      skip: pageOptionsDto.skip,
+    });
+
+    const pageMetaDto = PageMetaDtoFactory.create({
+      pageOptionsDto,
+      itemCount,
+    });
+
+    return new PageDto(albums, pageMetaDto);
   }
 
   async findOne(id: number): Promise<Album> {
@@ -47,6 +82,17 @@ export class AlbumsService {
       relations: ['media', 'title_image'],
     });
     this.ensureAlbumExists(album, id);
+    return album;
+  }
+
+  async findAlbumBySlug(slug: string, active_only?: boolean): Promise<Album> {
+    const album = await this.repo.findOne({
+      where: active_only ? { slug: slug, active: true } : { slug: slug },
+      relations: ['media', 'title_image'],
+    });
+
+    this.ensureAlbumExists(album, slug);
+
     return album;
   }
 
@@ -90,13 +136,21 @@ export class AlbumsService {
   async remove(id: number): Promise<Album> {
     const album = await this.repo.findOne({
       where: { id },
-      relations: ['media'],
+      relations: ['media', 'title_image'],
     });
     this.ensureAlbumExists(album, id);
 
-    album.media.forEach((media) => {
-      this.mediaService.remove(media.media.id);
+    album.media.forEach(async (media) => {
+      await this.mediaService.remove(media.media.id);
     });
+
+    await this.mediaService.remove(album.title_image.id);
+
+    const albumFolderPath = path.join('storage/albums', `${album.slug}`);
+    if (fs.existsSync(albumFolderPath)) {
+      fs.rmSync(albumFolderPath, { recursive: true, force: true });
+    }
+
     return this.repo.remove(album);
   }
 
@@ -206,10 +260,14 @@ export class AlbumsService {
     // Save the updated AlbumMedia entries back to the database
     await this.albumMediaRepo.save([albumMedia1, albumMedia2]);
   }
-  
-  private ensureAlbumExists(album: Album | undefined, id: number): void {
+
+  private ensureAlbumExists(album: Album, id: number | string): void {
+    let entity = 'ID';
+    if (typeof id === 'string') {
+      entity = 'Slug';
+    }
     if (!album) {
-      throw new NotFoundException(`Album with ID ${id} not found`);
+      throw new NotFoundException(`Album with ${entity} ${id} not found`);
     }
   }
 }
