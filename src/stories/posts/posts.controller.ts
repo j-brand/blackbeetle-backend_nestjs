@@ -23,6 +23,8 @@ import { PostDto } from './dto/post.dto';
 import { AuthGuard } from '@auth/guards/auth.guard';
 import { PostMedia } from '@entities/post_media.entity';
 import { PageOptionsDto } from '@shared/pagination/page-options.dto';
+import { PublicPostDto } from './dto/public-post.dto';
+import { PageDto } from '@shared/pagination/page.dto';
 
 export class test {
   query?: string = 'default';
@@ -56,7 +58,7 @@ export class PostsController {
   findByStory(
     @Param('storyId') storyId: string,
     @Query() pageOptionsDto: PageOptionsDto,
-  ) {
+  ): Promise<PageDto<PostDto | PublicPostDto>> {
     return this.postsService.findByStory(+storyId, pageOptionsDto);
   }
 
