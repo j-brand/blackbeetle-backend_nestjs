@@ -79,7 +79,7 @@ export class StoriesService {
     active_only: boolean = false,
   ): Promise<Story> {
     const story = await this.repo.findOne({
-      where: { slug },
+      where: active_only ? { slug, active: true } : { slug },
       relations: ['title_image'],
     });
 
