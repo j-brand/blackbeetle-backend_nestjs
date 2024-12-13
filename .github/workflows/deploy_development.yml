@@ -39,6 +39,7 @@ jobs:
         echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key
         chmod 600 private_key
         scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./dist ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/dist
+        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/dist
         ssh -p ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd ~/dist
           git pull origin development
