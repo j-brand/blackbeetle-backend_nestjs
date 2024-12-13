@@ -1,24 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
+import { Injectable, Logger } from '@nestjs/common';
+import { UsersService } from '@users/users.service';
+import { CreateUserDto } from '@users/dto/create-user.dto';
 import { faker } from '@faker-js/faker';
+import { User } from '@entities/user.entity';
 
 @Injectable()
-export class Seeder {
+export class UsersSeeder {
   constructor(private readonly usersService: UsersService) {}
 
-  async generate(count: number) {
-    try {
-      for (let i = 0; i < count; i++) {
-        const user = this.getUser();
-        await this.usersService.create(user);
-        console.log(`${user.name} wurde erstellt.`);
-      }
+  async seed(count: number): Promise<User[]> {
+    const users = Array.from({ length: count }, async () => {
+      const userData = this.getUser();
+      return await this.usersService.create(userData);
+    });
+    Logger.log(`${count} users created`, 'Users Seeder');
 
-      console.log('\nUser seeded successfully');
-    } catch (error) {
-      console.error('Failed to seed user:', error);
-    }
+    return Promise.all(users);
   }
 
   getUser(): CreateUserDto {

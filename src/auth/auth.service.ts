@@ -3,11 +3,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '@users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes, scrypt as _ascript } from 'crypto';
 import { promisify } from 'util';
-import { SignUpDto } from './dto/sign-up.dto';
+import { SignUpDto } from '@auth/dto/sign-up.dto';
 import { User } from '@entities/user.entity';
 
 const scrypt = promisify(_ascript);

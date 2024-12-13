@@ -17,11 +17,24 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "resolveJsonModule": true,
     "allowJs": true,
     "paths": {
-      "@entities/*": [
-        "./src/database/entities/*"
-      ],
+      "@entities/*": ["src/database/entities/*"],
+      "@migrations/*": ["src/database/migrations/*"],
+      "@seed/*": ["src/database/seed/*"],
+      "@auth/*": ["src/auth/*"],
+      "@users/*": ["src/users/*"],
+      "@albums/*": ["src/albums/*"],
+      "@stories/*": ["src/stories/*"],
+      "@posts/*": ["src/stories/posts/*"],
+      "@media/*": ["src/media/*"],
+      "@shared/*": ["src/shared/*"],
+      "@upload/*": ["src/shared/upload/*"],
+      "@database/*": ["src/database/*"],
+      "@subscribers/*": ["src/database/subscribers/*"],
+      "@storage/*": ["src/storage/*"],
+      "@app/*": ["src/*"]
     }
   }
 }
