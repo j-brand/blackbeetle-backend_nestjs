@@ -6,11 +6,9 @@ name: Build and Deploy development Branch
 on:
   push:
     branches: [ "development" ]
-  pull_request:
-    branches: [ "development" ]
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,23 +34,6 @@ jobs:
 
     - name: Build project
       run: npm run build 
-
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build
-        path: dist/ 
-  
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: build
-        path: ./dist 
 
     - name: Deploy to VPS
       env:
