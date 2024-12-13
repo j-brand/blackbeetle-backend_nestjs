@@ -38,8 +38,8 @@ jobs:
       run: |
         echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key
         chmod 600 private_key
-        scp -o StrictHostKeyChecking=no -i private_key -r ./dist ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/dist
-        ssh -o StrictHostKeyChecking=no -i private_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./dist ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/dist
+        ssh -p ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd ~/dist
           git pull origin development
           npm install
