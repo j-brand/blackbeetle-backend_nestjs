@@ -15,3 +15,4 @@ The Blackbeetle Backend API is built using Node.js and NestJS, leveraging TypeSc
 - **Background Jobs**: Handle background tasks and queues using BullMQ.
 - **Data Seeding**: Seed the database with initial data for development and testing purposes.
 - **Serialization and Validation**: Ensure data integrity and security using class-transformer and class-validator.
+
