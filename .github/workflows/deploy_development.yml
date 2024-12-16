@@ -31,6 +31,14 @@ jobs:
 
     - name: Build project
       run: npm run build 
+      env:
+        TYPEORM_TYPE: ${{ env.TYPEORM_TYPE }}
+        TYPEORM_DBNAME: ${{ env.TYPEORM_DBNAME }}
+        TYPEORM_SYNCHRONIZE: ${{ env.TYPEORM_SYNCHRONIZE }}
+        TYPEORM_LOGGING: ${{ env.TYPEORM_LOGGING }}
+        JWT_SECRET: ${{ env.JWT_SECRET }}
+        BULL_HOST: ${{ env.BULL_HOST }}
+        BULL_PORT: ${{ env.BULL_PORT }}
 
     - name: Deploy to VPS
       env:
