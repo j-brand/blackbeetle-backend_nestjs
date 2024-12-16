@@ -38,10 +38,10 @@ jobs:
       run: |
         echo "${{secrets.SSH_PRIVATE_KEY}}" > private_key
         chmod 600 private_key
-        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/blackbeetle-backend
-        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/blackbeetle-backend
+        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./dist/* ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/httpdocs
+        scp -P ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key -r ./package.json ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/httpdocs
         ssh -p ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no -i private_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/blackbeetle-backend
+          cd ~/httpdocs
           git pull origin development
           npm install
         EOF
