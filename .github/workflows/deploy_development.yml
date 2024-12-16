@@ -44,6 +44,5 @@ jobs:
           cd ~/blackbeetle-backend
           git pull origin development
           npm install
-          pm2 restart all # or any other command to restart your application
         EOF
       shell: bash
