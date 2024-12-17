@@ -13,6 +13,8 @@ import { AlbumSubscriber } from './subscribers/album.subscriber';
 let typeormConfig = {
   type: process.env.TYPEORM_TYPE,
   database: process.env.TYPEORM_DBNAME,
+  username: process.env.TYPEORM_USERNAME,
+  password: process.env.TYPEORM_PASSWORD,
   synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
   logging: false,
   entities: [__dirname + '/../**/*.entity.js'],
