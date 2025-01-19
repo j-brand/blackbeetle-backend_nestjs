@@ -26,20 +26,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Install dependencies
-      run: npm install
-
-    - name: Build project
-      run: npm run build 
-      env:
-        TYPEORM_TYPE: mysql
-        TYPEORM_DBNAME: ${{ secrets.TYPEORM_DBNAME }}
-        TYPEORM_SYNCHRONIZE: ${{ vars.TYPEORM_SYNCHRONIZE }}
-        TYPEORM_LOGGING: ${{ vars.TYPEORM_LOGGING }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
-        BULL_HOST: ${{ vars.BULL_HOST }}
-        BULL_PORT: ${{ vars.BULL_PORT }}
-
     - name: Deploy to VPS
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -52,5 +38,6 @@ jobs:
           cd ~/httpdocs
           git pull origin development
           npm install
+          npm run build
         EOF
       shell: bash
