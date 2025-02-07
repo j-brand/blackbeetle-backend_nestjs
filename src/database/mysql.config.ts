@@ -3,7 +3,7 @@ import { MediaSubscriber } from './subscribers/media.subscriber';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 
 export default (): MysqlConnectionOptions => ({
-  type: 'mysql',
+  type: 'mariadb',
   host: process.env.TYPEORM_HOST,
   port: parseInt(process.env.TYPEORM_DBPORT),
   database: process.env.TYPEORM_DBNAME,
