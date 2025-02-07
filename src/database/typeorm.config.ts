@@ -18,11 +18,11 @@ let typeormConfig = {
   password: process.env.TYPEORM_PASSWORD,
   synchronize: process.env.TYPEORM_SYNCHRONIZE || false,
   logging: true,
-  entities: ['dist/**/*.entity.js'],
+  entities: ['dist/**/*.entity{.ts,.js}'],
   autoLoadEntities: true,
-  subscribers: ['dist/**/*.subscriber.js'],
+  subscribers: ['dist/**/*.subscriber{.ts,.js}'],
   //entities: [User, Album, Media, MediaVariation, AlbumMedia, Post, PostMedia, Story, Comment],
-  migrations: ['dist/**/migrations/*.js'],
+  migrations: ['dist/**/migrations/*{.ts,.js}'],
   migrationsTableName: 'migration_history',
 };
 
