@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { AuthService } from '@auth/auth.service';
 import { SignInDto } from '@auth/dto/sign-in.dto';
 import { SignUpDto } from '@auth/dto/sign-up.dto';
@@ -23,5 +31,12 @@ export class AuthController {
     const user = await this.authService.signUp(body);
 
     return user;
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('confirm/:token')
+  async confirm(@Param('token') token) {
+    const confirmed = await this.authService.confirm(token);
+    return confirmed;
   }
 }

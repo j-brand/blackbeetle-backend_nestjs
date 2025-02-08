@@ -86,4 +86,18 @@ export class AuthService {
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken: accessToken };
   }
+
+  async confirm(token: string) {
+    const user = await this.usersService.findByToken(token);
+
+    if (!user) {
+      throw new BadRequestException('Invalid token');
+    }
+
+    user.verified = true;
+    user.token = null;
+    await this.usersService.update(user.id, user);
+
+    return true;
+  }
 }

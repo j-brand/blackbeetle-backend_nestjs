@@ -34,6 +34,11 @@ export class UsersService {
     return user;
   }
 
+  async findByToken(token: string): Promise<User> {
+    const user = await this.repo.findOne({ where: { token } });
+    return user;
+  }
+
   async update(
     id: number,
     updateUserDto: Partial<UpdateUserDto>,
