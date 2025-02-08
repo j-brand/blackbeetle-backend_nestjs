@@ -1,5 +1,3 @@
-import { AlbumSubscriber } from './subscribers/album.subscriber';
-import { MediaSubscriber } from './subscribers/media.subscriber';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 
 export default (): MysqlConnectionOptions => ({
@@ -12,7 +10,6 @@ export default (): MysqlConnectionOptions => ({
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: false,
   entities: [__dirname + '/../**/*.entity.js'],
-  subscribers: [MediaSubscriber, AlbumSubscriber],
-  //entities: [User, Album, Media, MediaVariation, AlbumMedia],
+  subscribers: [__dirname + '/../subscribers/*.subscriber.js'],
   migrations: ['@migrations/*.js'],
 });

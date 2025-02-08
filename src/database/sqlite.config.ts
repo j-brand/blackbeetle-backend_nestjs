@@ -1,6 +1,4 @@
 import { SqliteConnectionOptions } from "typeorm/driver/sqlite/SqliteConnectionOptions";
-import { AlbumSubscriber } from "./subscribers/album.subscriber";
-import { MediaSubscriber } from "./subscribers/media.subscriber";
 
 export default (): SqliteConnectionOptions => ({
   type: 'sqlite',
@@ -8,6 +6,6 @@ export default (): SqliteConnectionOptions => ({
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: process.env.TYPEORM_LOGGING === 'true',
-  subscribers: [MediaSubscriber, AlbumSubscriber],
+  subscribers: [__dirname + '/../subscribers/*.subscriber{.ts,.js}'],
   migrations: ['@migrations/*.js'],
 });
