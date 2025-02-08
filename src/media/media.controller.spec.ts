@@ -3,7 +3,7 @@ import { MediaController } from './media.controller';
 import { MediaService } from '@media/media.service';
 import * as fs from 'fs';
 import { NotFoundException } from '@nestjs/common';
-import { Media } from '@app/database/entities/media.entity';
+import { Media } from '@database/entities/media.entity';
 
 jest.mock('fs');
 

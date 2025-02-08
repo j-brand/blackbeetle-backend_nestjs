@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '@app/app.module';
+import { AppModule } from '../../app/app.module';
 import { Logger } from '@nestjs/common';
 import { Seeder } from './seed.seeder';
 import { Queue, QueueEvents } from 'bullmq';

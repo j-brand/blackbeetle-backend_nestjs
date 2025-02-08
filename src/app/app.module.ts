@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { AppController } from '@app/app.controller';
-import { AppService } from '@app/app.service';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import sqliteConfig from '@database/sqlite.config';
-import mysqlConfig from '@database/mysql.config';
+import mariadbConfig from '@database/mariadb.config';
 
-import { queueConfig } from '@app/queue.config';
+import { queueConfig } from './queue.config';
 
 import { AuthModule } from '@auth/auth.module';
 import { SharedModule } from '@shared/shared.module';
@@ -16,15 +16,25 @@ import { MediaModule } from '@media/media.module';
 import { UsersModule } from '@users/users.module';
 import { AlbumsModule } from '@albums/albums.module';
 import { StoriesModule } from '@stories/stories.module';
+import { MailModule } from '@mail/mail.module';
+import { NODE_ENV } from './constants';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [sqliteConfig, mysqlConfig],
+      load: [sqliteConfig, mariadbConfig],
     }),
-    TypeOrmModule.forRootAsync({ useFactory: process.env.NODE_ENV === 'development' ? sqliteConfig : mysqlConfig }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return configService.get('NODE_ENV') === NODE_ENV.DEVELOPMENT
+          ? sqliteConfig()
+          : mariadbConfig();
+      },
+    }),
     queueConfig,
     UsersModule,
     AlbumsModule,
@@ -32,6 +42,7 @@ import { StoriesModule } from '@stories/stories.module';
     SharedModule,
     MediaModule,
     StoriesModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -7,7 +7,7 @@ import { Media } from '@entities/media.entity';
 import { MediaVariation } from '@entities/media_variation.entity';
 import { BullModule } from '@nestjs/bullmq';
 import { ImageProcessor } from '@media/image.processor';
-import { AlbumMedia } from '@app/database/entities/album_media.entity';
+import { AlbumMedia } from '@database/entities/album_media.entity';
 
 @Module({
   imports: [

@@ -7,7 +7,7 @@ import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 import { CreateStoryDto } from './dto/create-story.dto';
 import { UpdateStoryDto } from './dto/update-story.dto';
 import { MediaService } from '@media/media.service';
-import { CreateMediaDto } from '@app/media/dto/create-media.dto';
+import { CreateMediaDto } from '@media/dto/create-media.dto';
 import { Media } from '@entities/media.entity';
 
 describe('StoriesService', () => {

@@ -22,6 +22,7 @@ export class UsersSeeder {
     const user: CreateUserDto = {
       name: faker.person.fullName(),
       email: faker.internet.email(),
+      token: faker.string.uuid(),
       password: faker.internet.password(),
     };
     return user;

@@ -1,4 +1,4 @@
-import { Media } from '@app/database/entities/media.entity';
+import { Media } from '@database/entities/media.entity';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateStoryDto {

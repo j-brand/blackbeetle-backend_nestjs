@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '@users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { randomBytes, scrypt as _ascript } from 'crypto';
+import { randomBytes, scrypt as _ascript, randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { SignUpDto } from '@auth/dto/sign-up.dto';
 import { User } from '@entities/user.entity';
+import { MailService } from '@mail/mail.service';
 
 const scrypt = promisify(_ascript);
 
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async signUp(dto: SignUpDto) {
@@ -32,15 +34,22 @@ export class AuthService {
     // Hash the user's password
     const hash = (await scrypt(dto.password, salt, 32)) as Buffer;
 
+    // Generate a token for confirmation email
+    const token = randomUUID();
+
     // Join the salt and hashed password
     const result = salt + '.' + hash.toString('hex');
 
     const user = await this.usersService.create({
       name: dto.name,
       email: dto.email,
+      token: token,
       password: result,
     });
     const accessToken = await this.createAccessToken(user);
+
+    // Send confirmation email
+    this.mailService.sendConfirmationEmail(user);
 
     return accessToken;
   }
