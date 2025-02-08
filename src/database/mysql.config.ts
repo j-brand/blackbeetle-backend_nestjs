@@ -9,7 +9,7 @@ export default (): MysqlConnectionOptions => ({
   password: process.env.TYPEORM_PASSWORD,
   synchronize: process.env.TYPEORM_SYNCHRONIZE === 'true',
   logging: false,
-  entities: [__dirname + '/../**/*.entity.js'],
-  subscribers: [__dirname + '/../subscribers/*.subscriber.js'],
+  entities: [__dirname + '/../**/*.entity{.js,.ts}'],
+  subscribers: [__dirname + '/../subscribers/*.subscriber{.js,.ts}'],
   migrations: ['@migrations/*.js'],
 });
