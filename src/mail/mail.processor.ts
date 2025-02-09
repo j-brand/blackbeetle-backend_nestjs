@@ -4,14 +4,17 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bullmq';
 import * as nodemailer from 'nodemailer';
-import { MailData } from './mail.service';
+import { MailData, MailService } from './mail.service';
 
 @Processor('mail')
 export class MailProcessor extends WorkerHost {
   private transporter: nodemailer.Transporter;
   private readonly logger = new Logger(MailProcessor.name);
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly mailService: MailService,
+  ) {
     super();
     this.initializeTransporter();
   }
@@ -30,14 +33,13 @@ export class MailProcessor extends WorkerHost {
 
   async process(job: Job<MailData>) {
     this.logger.log('Sending email');
-    const { to, subject, text, html, attachments } = job.data;
-    
+    const { to, subject, templateName, html, attachments } = job.data;
+
     try {
       await this.transporter.sendMail({
-        from: this.configService.get('MAIL_FROM'),
+        from: this.configService.get<string>('MAIL_FROM'),
         to,
         subject,
-        text,
         html,
         attachments,
       });
@@ -47,7 +49,7 @@ export class MailProcessor extends WorkerHost {
   }
 
   @OnWorkerEvent('completed')
-    onJobCompleted(job: Job<MailData>) {
-        this.logger.log(`Mail sent to ${job.data.to}`);
-    }
-} 
+  onJobCompleted(job: Job<MailData>) {
+    this.logger.log(`Mail sent to ${job.data.to}`);
+  }
+}

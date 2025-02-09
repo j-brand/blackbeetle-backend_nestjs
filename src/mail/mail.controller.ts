@@ -10,9 +10,13 @@ export class MailController {
     const mailData: MailData = {
       to: 'joahnnes@blackbeetle.de',
       subject: 'Test',
-      text: 'Hello World!',
+      templateName: 'welcome',
     };
 
-    return await this.mailService.sendMail(mailData);
+    const context = {
+      name: 'Johannes',
+    };
+
+    return await this.mailService.sendMail(mailData, context);
   }
 }

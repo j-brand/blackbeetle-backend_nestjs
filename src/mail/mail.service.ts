@@ -5,11 +5,13 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { User } from '@database/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
+import { join } from 'path';
+import * as ejs from 'ejs';
 
 export interface MailData {
   to: string | string[];
   subject: string;
-  text?: string;
+  templateName: string;
   html?: string;
   attachments?: any[];
 }
@@ -22,19 +24,27 @@ export class MailService {
   ) {}
 
   async sendConfirmationEmail(user: User) {
-    const mailData: MailData = {
+    /*     const mailData: MailData = {
       to: user.email,
       subject: 'Please confirm your email address',
       text: `Click here to confirm your email address: ${this.configService.get('APP_URL')}/auth/confirm/${user.token}`,
     };
 
     await this.mailQueue.add('mail', mailData);
-    return true;
+    return true; */
   }
 
-  async sendMail(mailData: MailData) {
+  async sendMail(mailData: MailData, context: object) {
+
+    mailData.html = await this.renderTemplate(mailData.templateName, context);
+
     await this.mailQueue.add('mail', mailData);
-    return 'Mail sent';
+    return 'Mail queued';
+  }
+
+  async renderTemplate(templateName: string, context: object) {
+    const templatePath = join(__dirname, 'templates', `${templateName}.ejs`);
+    return ejs.renderFile(templatePath, context);
   }
 
   getHello(): string {

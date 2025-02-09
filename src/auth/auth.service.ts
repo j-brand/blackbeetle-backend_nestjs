@@ -10,6 +10,7 @@ import { promisify } from 'util';
 import { SignUpDto } from '@auth/dto/sign-up.dto';
 import { User } from '@entities/user.entity';
 import { MailService } from '@mail/mail.service';
+import { ConfigService } from '@nestjs/config';
 
 const scrypt = promisify(_ascript);
 
@@ -19,6 +20,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
   async signUp(dto: SignUpDto) {
@@ -49,7 +51,16 @@ export class AuthService {
     const accessToken = await this.createAccessToken(user);
 
     // Send confirmation email
-    this.mailService.sendConfirmationEmail(user);
+    const mailData = {
+      to: user.email,
+      subject: 'Please confirm your email address',
+      templateName: 'welcome',
+    };
+    this.mailService.sendMail(mailData, {
+      name: user.name,
+      app_url: this.configService.get<string>('APP_URL'),
+      token: token,
+    });
 
     return accessToken;
   }
