@@ -1,12 +1,9 @@
-import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { User } from '@database/entities/user.entity';
-import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import * as ejs from 'ejs';
+import * as fs from 'fs/promises';
 
 export interface MailData {
   to: string | string[];
@@ -16,38 +13,64 @@ export interface MailData {
   attachments?: any[];
 }
 
+interface SendMailResponse {
+  status: 'queued' | 'error';
+  message: string;
+}
+
 @Injectable()
 export class MailService {
-  constructor(
-    @InjectQueue('mail') private mailQueue: Queue,
-    private readonly configService: ConfigService,
-  ) {}
+  private readonly logger = new Logger(MailService.name);
 
-  async sendConfirmationEmail(user: User) {
-    /*     const mailData: MailData = {
-      to: user.email,
-      subject: 'Please confirm your email address',
-      text: `Click here to confirm your email address: ${this.configService.get('APP_URL')}/auth/confirm/${user.token}`,
-    };
+  constructor(@InjectQueue('mail') private mailQueue: Queue) {}
 
-    await this.mailQueue.add('mail', mailData);
-    return true; */
+  async sendMail(
+    mailData: MailData,
+    context: Record<string, unknown>,
+  ): Promise<SendMailResponse> {
+    try {
+      // Render template
+      mailData.html = await this.renderTemplate(mailData.templateName, context);
+
+      // Add to queue
+      await this.mailQueue.add('mail', mailData, {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 1000,
+        },
+      });
+
+      this.logger.log(`Mail queued successfully to ${mailData.to}`);
+      return { status: 'queued', message: 'Mail queued successfully' };
+    } catch (error) {
+      this.logger.error(`Failed to queue mail: ${error.message}`, error.stack);
+      return {
+        status: 'error',
+        message: `Failed to queue mail: ${error.message}`,
+      };
+    }
   }
 
-  async sendMail(mailData: MailData, context: object) {
+  async renderTemplate(
+    templateName: string,
+    context: Record<string, unknown>,
+  ): Promise<string> {
+    try {
+      const templatePath = join(__dirname, 'templates', `${templateName}.ejs`);
 
-    mailData.html = await this.renderTemplate(mailData.templateName, context);
+      // Check if template exists
+      await fs.access(templatePath);
 
-    await this.mailQueue.add('mail', mailData);
-    return 'Mail queued';
-  }
-
-  async renderTemplate(templateName: string, context: object) {
-    const templatePath = join(__dirname, 'templates', `${templateName}.ejs`);
-    return ejs.renderFile(templatePath, context);
-  }
-
-  getHello(): string {
-    return 'Hello World!';
+      return await ejs.renderFile(templatePath, context);
+    } catch (error) {
+      this.logger.error(
+        `Template rendering failed: ${error.message}`,
+        error.stack,
+      );
+      throw new Error(
+        `Failed to render template ${templateName}: ${error.message}`,
+      );
+    }
   }
 }

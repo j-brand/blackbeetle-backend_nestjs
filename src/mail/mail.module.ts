@@ -4,6 +4,7 @@ import { MailService } from '@mail/mail.service';
 import { MailProcessor } from '@mail/mail.processor';
 import { ConfigModule } from '@nestjs/config';
 import { MailController } from '@mail/mail.controller';
+import { LoggingModule } from '@shared/logging/logging.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { MailController } from '@mail/mail.controller';
     BullModule.registerQueue({
       name: 'mail',
     }),
+    LoggingModule,
   ],
   providers: [MailService, MailProcessor],
   exports: [MailService],

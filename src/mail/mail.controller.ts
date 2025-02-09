@@ -1,22 +1,28 @@
-import { Controller, Get } from '@nestjs/common';
-import { MailData, MailService } from '@mail/mail.service';
+import { Controller, Post, Body, HttpStatus, HttpException } from '@nestjs/common';
+import { MailService } from './mail.service';
+import { SendMailDto } from './dto/send-mail.dto';
+
 
 @Controller('mail')
 export class MailController {
   constructor(private readonly mailService: MailService) {}
 
-  @Get()
-  async sendMail(): Promise<string> {
-    const mailData: MailData = {
-      to: 'joahnnes@blackbeetle.de',
-      subject: 'Test',
-      templateName: 'welcome',
-    };
+  @Post('send')
+  async sendMail(@Body() sendMailDto: SendMailDto) {
+    const { to, subject, templateName, context } = sendMailDto;
+    
+    const result = await this.mailService.sendMail(
+      { to, subject, templateName },
+      context
+    );
 
-    const context = {
-      name: 'Johannes',
-    };
+    if (result.status === 'error') {
+      throw new HttpException(result.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-    return await this.mailService.sendMail(mailData, context);
+    return { 
+      statusCode: HttpStatus.CREATED,
+      message: result.message 
+    };
   }
 }

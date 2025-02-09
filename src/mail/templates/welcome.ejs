@@ -1,14 +1,15 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Willkommen</title>
-  </head>
+  <%- include('./partials/head', { title: 'Willkommen' }) %>
   <body>
-    <h1>Hallo <%= name %>,</h1>
-    <p>Willkommen in unserer App! Wir freuen uns, dich an Bord zu haben.</p>
-    <p>
-      Click here to confirm your email address: <%= app_url %>/auth/confirm/<%=
-      token %>
-    </p>
+    <div class="container">
+      <h1>Hallo <%= name %>,</h1>
+      <p>Willkommen in unserer App! Wir freuen uns, dich an Bord zu haben.</p>
+      <p>
+        Click here to confirm your email address: <%= app_url %>/auth/confirm/<%=
+        token %>
+      </p>
+      <%- include('./partials/footer') %>
+    </div>
   </body>
 </html>

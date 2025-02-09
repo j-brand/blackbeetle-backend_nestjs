@@ -1,22 +1,23 @@
-import { Logger, Module } from '@nestjs/common';
-import { BullModule, OnWorkerEvent } from '@nestjs/bullmq';
+import { OnWorkerEvent } from '@nestjs/bullmq';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { ConfigService } from '@nestjs/config';
 import { Job } from 'bullmq';
 import * as nodemailer from 'nodemailer';
-import { MailData, MailService } from './mail.service';
+import { MailData } from './mail.service';
+import { LoggingService } from '@shared/logging/logging.service';
 
 @Processor('mail')
 export class MailProcessor extends WorkerHost {
   private transporter: nodemailer.Transporter;
-  private readonly logger = new Logger(MailProcessor.name);
+  private readonly mailLogger;
 
   constructor(
     private configService: ConfigService,
-    private readonly mailService: MailService,
+    private readonly loggingService: LoggingService,
   ) {
     super();
     this.initializeTransporter();
+    this.mailLogger = this.loggingService.getLogger('mail');
   }
 
   private initializeTransporter() {
@@ -32,7 +33,13 @@ export class MailProcessor extends WorkerHost {
   }
 
   async process(job: Job<MailData>) {
-    this.logger.log('Sending email');
+    this.mailLogger.info('Sending email', {
+      to: job.data.to,
+      subject: job.data.subject,
+      templateName: job.data.templateName,
+      jobId: job.id,
+    });
+
     const { to, subject, templateName, html, attachments } = job.data;
 
     try {
@@ -43,13 +50,25 @@ export class MailProcessor extends WorkerHost {
         html,
         attachments,
       });
+      this.mailLogger.info('Email sent successfully', {
+        jobId: job.id,
+        to: job.data.to,
+      });
     } catch (error) {
-      throw new Error(`Failed to send email: ${error.message}`);
+      this.mailLogger.error('Failed to send email', {
+        jobId: job.id,
+        error: error.message,
+        stack: error.stack,
+      });
+      throw error;
     }
   }
 
   @OnWorkerEvent('completed')
   onJobCompleted(job: Job<MailData>) {
-    this.logger.log(`Mail sent to ${job.data.to}`);
+    this.mailLogger.info('Mail job completed', {
+      jobId: job.id,
+      to: job.data.to,
+    });
   }
 }
